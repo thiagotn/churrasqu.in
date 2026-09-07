@@ -42,5 +42,11 @@ Pré-requisitos no cluster: ingress-nginx, cert-manager com `ClusterIssuer` cham
 
 ## Notas
 
-- O Postgres roda no cluster (StatefulSet 1 réplica). Backup do PVC é responsabilidade do homelab.
-- CI de build/push das imagens fica como melhoria futura (não há remoto git configurado ainda).
+- **⚠️ Deploy real no homelab (2026-09-08):** os manifests deste diretório (`deploy/k8s`) são a versão
+  **genérica** e ficaram como referência. A verdade do deploy é o repo `homelab`:
+  `helm/apps/churrasquin/` + `docs/adr/0008-churrasquin-no-homelab.md`, que adapta ao padrão do cluster —
+  1 réplica sem HPA, **Postgres compartilhado** (sem StatefulSet próprio), Traefik + **Cloudflare Tunnel**
+  (não ingress-nginx), GitOps via Argo CD com tags no kustomization. Os Dockerfiles daqui continuam sendo
+  os oficiais (a ADR 0008 os consome via GHCR).
+- CI de build/push das imagens fica como melhoria futura (não há remoto git configurado ainda); até lá o
+  push é manual e o bump da tag é feito no kustomization do homelab.
