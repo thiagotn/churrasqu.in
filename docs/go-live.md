@@ -1,9 +1,10 @@
 # Go-live — dependências pendentes (checklist de referência)
 
-> Atualizado em 2026-09-08 (2ª revisão). **A–D concluídos**: deploy key + secret configurados, packages
-> GHCR públicos (pull anônimo verificado), homelab pushado e o write-back do CI já gravou
-> `sha-8436349…` no kustomization (`deploy(churrasquin): … [skip ci]`). Faltam **E, F e G** (Cloudflare,
-> secrets/Application no cluster e a virada de DNS). Marque os itens conforme for resolvendo.
+> Atualizado em 2026-09-08 (3ª revisão). **A–F concluídos.** Zona delegada e servida pela Cloudflare
+> (kiki/vern.ns.cloudflare.com); app no cluster `Synced/Healthy` (api `/api/health` com db up, web ok);
+> certificado `churrasquin-tls` emitido — prova que o token do cert-manager cobre a zona (E.2).
+> Incidente registrado: a 1ª `DATABASE_URL` foi criada com o placeholder `<SENHA>` literal → P1000 no
+> migrate; corrigido recriando o secret com a senha do `churrasquin-db-init`. Falta só o **G**.
 
 ## A. CI write-back (GitHub)
 
@@ -43,39 +44,39 @@ inertes sem DNS e o app só entra no cluster no passo F.6.
 
 ## E. Cloudflare
 
-- [ ] **Zona `churrasqu.in` ativa** na conta (domínio registrado + nameservers da Cloudflare)
-- [ ] **Token do cert-manager cobre a zona nova**: o secret `cloudflare-api-token` (DNS-01) precisa de
+- [x] **Zona `churrasqu.in` ativa** na conta (domínio registrado + nameservers da Cloudflare)
+- [x] **Token do cert-manager cobre a zona nova**: o secret `cloudflare-api-token` (DNS-01) precisa de
   `Zone:DNS:Edit` na zona `churrasqu.in` — token por conta já cobre; token por zona, estender/recriar
 
 ## F. Cluster (no node, via mesh/LAN) — ordem da ADR 0008 do homelab
 
-- [ ] 1. Senha do role no Postgres compartilhado:
+- [x] 1. Senha do role no Postgres compartilhado:
   ```bash
   kubectl create secret generic churrasquin-db-init -n postgres \
     --from-literal=password="$(openssl rand -hex 24)"
   ```
-- [ ] 2. Provisionar database + role (Job idempotente, se autolimpa):
+- [x] 2. Provisionar database + role (Job idempotente, se autolimpa):
   ```bash
   kubectl apply -f helm/postgres/app-db-churrasquin.yml
   kubectl -n postgres wait --for=condition=complete job/db-init-churrasquin --timeout=120s
   ```
-- [ ] 3. `kubectl apply -f helm/apps/churrasquin/namespace.yml`
-- [ ] 4. Secret do banco no ns do app (mesma senha do passo 1):
+- [x] 3. `kubectl apply -f helm/apps/churrasquin/namespace.yml`
+- [x] 4. Secret do banco no ns do app (mesma senha do passo 1):
   ```bash
   kubectl create secret generic churrasquin-db -n churrasquin \
     --from-literal=DATABASE_URL="postgresql://churrasquin:<SENHA>@postgres.postgres.svc.cluster.local:5432/churrasquin"
   ```
-- [ ] 5. Secret da api:
+- [x] 5. Secret da api:
   ```bash
   kubectl create secret generic churrasquin-api -n churrasquin \
     --from-literal=JWT_SECRET="$(openssl rand -hex 32)"
   ```
-- [ ] 6. Argo assume o app:
+- [x] 6. Argo assume o app:
   ```bash
   kubectl apply -f helm/argocd/application-churrasquin.yml
   kubectl -n argocd get app churrasquin   # quer Synced / Healthy
   ```
-- [ ] 7. Validar por dentro antes do DNS (o node não resolve `*.svc.cluster.local` — use ClusterIP):
+- [x] 7. Validar por dentro antes do DNS (o node não resolve `*.svc.cluster.local` — use ClusterIP):
   ```bash
   API_IP=$(kubectl -n churrasquin get svc churrasquin-api -o jsonpath='{.spec.clusterIP}')
   curl -s http://$API_IP:3001/api/health   # espera {"status":"ok",...}
