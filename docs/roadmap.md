@@ -1,6 +1,6 @@
 # Roadmap de fatias
 
-> Fatia atual: **5 — RSVP** (`WIP`)
+> Fatia atual: **6 — Docker + manifests k8s** (`WIP`)
 
 | # | Fatia | Status | Doc | Entrega |
 |---|---|---|---|---|
@@ -9,8 +9,8 @@
 | 2 | Telas 1–3 no front (Setup, Nível, Lista) | `DONE` | [slices/02-telas-1-3.md](./slices/02-telas-1-3.md) | UI hifi com recálculo instantâneo |
 | 3 | Auth (cadastro/login) + persistência | `DONE` | [slices/03-auth.md](./slices/03-auth.md) | JWT, users, banco + salvar churras |
 | 4 | Sharing: slug, link público, QR Code, Pix | `DONE` | [slices/04-sharing.md](./slices/04-sharing.md) | Telas 4–6, payload Pix EMV, página pública |
-| 5 | RSVP na página pública | `WIP` | [slices/05-rsvp.md](./slices/05-rsvp.md) | Confirmação de presença + lista de confirmados |
-| 6 | Docker + manifests k8s (homelab) | `TODO` | [slices/06-deploy-k8s.md](./slices/06-deploy-k8s.md) | Dockerfiles multi-stage, manifests, probes, migrations |
+| 5 | RSVP na página pública | `DONE` | [slices/05-rsvp.md](./slices/05-rsvp.md) | Confirmação de presença + lista de confirmados |
+| 6 | Docker + manifests k8s (homelab) | `WIP` | [slices/06-deploy-k8s.md](./slices/06-deploy-k8s.md) | Dockerfiles multi-stage, manifests, probes, migrations |
 
 ## Regras de atualização
 

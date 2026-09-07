@@ -1,11 +1,22 @@
-import { Controller, Get, Header, Param, Res } from '@nestjs/common';
+import { Body, Controller, Get, Header, HttpCode, Param, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 import * as QRCode from 'qrcode';
+import { RsvpDto } from '../rsvp/dto/rsvp.dto';
+import { RsvpService } from '../rsvp/rsvp.service';
 import { SharingService } from './sharing.service';
 
 @Controller('public')
 export class PublicController {
-  constructor(private readonly sharing: SharingService) {}
+  constructor(
+    private readonly sharing: SharingService,
+    private readonly rsvp: RsvpService,
+  ) {}
+
+  @HttpCode(200)
+  @Post(':slug/rsvp')
+  respond(@Param('slug') slug: string, @Body() dto: RsvpDto) {
+    return this.rsvp.respond(slug, dto);
+  }
 
   @Get(':slug')
   invite(@Param('slug') slug: string) {

@@ -23,7 +23,20 @@ interface Invite {
   perAdult: number;
   organizer: string;
   categories: { category: string; items: string[] }[];
+  confirmed: string[];
   pix: { type: string; key: string; payload: string } | null;
+}
+
+type RsvpResponse = 'vou' | 'levo-alguem' | 'nao-vou';
+
+const RSVP_OPTIONS: { id: RsvpResponse; label: string; note: string }[] = [
+  { id: 'vou', label: 'Vou!', note: 'Boa! Chega cedo que a picanha não espera.' },
+  { id: 'levo-alguem', label: 'Vou levar alguém', note: 'Fechou! Seu +1 entra na lista dos confirmados.' },
+  { id: 'nao-vou', label: 'Não vou', note: 'Que pena — fica pro próximo churras.' },
+];
+
+function rsvpStorageKey(slug: string): string {
+  return `churrasquin.rsvp.${slug}`;
 }
 
 function Skeleton() {
@@ -43,6 +56,51 @@ export default function PublicInvitePage({ params }: { params: Promise<{ slug: s
   const [invite, setInvite] = useState<Invite | null>(null);
   const [error, setError] = useState('');
   const [copiedPix, setCopiedPix] = useState(false);
+  const [guestName, setGuestName] = useState('');
+  const [rsvp, setRsvp] = useState<RsvpResponse | null>(null);
+  const [rsvpToken, setRsvpToken] = useState<string | null>(null);
+  const [rsvpError, setRsvpError] = useState('');
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(rsvpStorageKey(slug));
+      if (raw) {
+        const saved = JSON.parse(raw) as { token: string; name: string; response: RsvpResponse };
+        setGuestName(saved.name);
+        setRsvp(saved.response);
+        setRsvpToken(saved.token);
+      }
+    } catch {
+      /* storage indisponível */
+    }
+  }, [slug]);
+
+  const sendRsvp = async (response: RsvpResponse) => {
+    if (!guestName.trim()) {
+      setRsvpError('Conta pra gente quem é você primeiro.');
+      return;
+    }
+    setRsvpError('');
+    const previous = rsvp;
+    setRsvp(response);
+    try {
+      const res = await api<{ token: string; name: string; response: RsvpResponse }>(
+        `/public/${slug}/rsvp`,
+        { method: 'POST', body: { name: guestName.trim(), response, token: rsvpToken ?? undefined } },
+      );
+      setRsvpToken(res.token);
+      try {
+        localStorage.setItem(rsvpStorageKey(slug), JSON.stringify(res));
+      } catch {
+        /* noop */
+      }
+      const updated = await api<Invite>(`/public/${slug}`);
+      setInvite(updated);
+    } catch {
+      setRsvp(previous);
+      setRsvpError('Não rolou confirmar agora — tenta de novo.');
+    }
+  };
 
   useEffect(() => {
     api<Invite>(`/public/${slug}`)
@@ -156,6 +214,53 @@ export default function PublicInvitePage({ params }: { params: Promise<{ slug: s
                 </p>
               )}
               <div className="text-[13px] font-bold opacity-85">Organizado por {invite.organizer}</div>
+            </section>
+
+            {/* RSVP */}
+            <section className="flex flex-col gap-3 border-4 border-ink bg-paper p-[clamp(18px,2.5vw,30px)] shadow-comic-8">
+              <h2 className="font-display text-[28px] tracking-wide text-ink">Você vai?</h2>
+              <input
+                className="h-[48px] w-full min-w-0 border-[3px] border-ink bg-white px-[14px] text-[15px] font-bold text-ink outline-none focus:bg-paper"
+                placeholder="Seu nome"
+                value={guestName}
+                onChange={(e) => setGuestName(e.target.value)}
+              />
+              <div className="flex flex-wrap gap-2">
+                {RSVP_OPTIONS.map((option) => (
+                  <button
+                    key={option.id}
+                    onClick={() => void sendRsvp(option.id)}
+                    className={`rounded-full border-[3px] border-ink px-4 py-2 text-[14px] font-extrabold shadow-comic-3 ${press} ${
+                      rsvp === option.id ? 'bg-ember text-paper' : 'bg-paper text-ink hover:bg-mustard'
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+              {rsvpError && (
+                <p className="border-[3px] border-ember bg-paper p-2 text-[13px] font-black text-ember">{rsvpError}</p>
+              )}
+              {rsvp && (
+                <p className="text-[14px] font-bold text-body-text">
+                  {RSVP_OPTIONS.find((o) => o.id === rsvp)?.note}
+                </p>
+              )}
+              <div className="h-[3px] bg-[#17130F1A]" />
+              <div className="text-[12px] font-black uppercase tracking-[2px] text-muted">Confirmados</div>
+              <div className="flex flex-wrap gap-2">
+                {invite.confirmed.length === 0 && (
+                  <span className="text-[14px] font-bold text-muted">Ninguém ainda — seja a primeira pessoa!</span>
+                )}
+                {invite.confirmed.map((name, i) => (
+                  <span
+                    key={`${name}-${i}`}
+                    className="rounded-full border-[3px] border-ink bg-cream px-3 py-[7px] text-[14px] font-extrabold text-ink"
+                  >
+                    {name}
+                  </span>
+                ))}
+              </div>
             </section>
           </div>
         </>

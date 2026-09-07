@@ -1,21 +1,27 @@
 # Fatia 5 — RSVP
 
-**Status: TODO**
+**Status: DONE**
 
 ## Objetivo
 
 Convidado confirma presença na página pública e o organizador vê quem vai.
 
-## Escopo previsto
-
-- Módulo `rsvp`: `POST /public/:slug/rsvp` (nome + resposta `Vou! / Vou levar alguém / Não vou`), listagem de confirmados no `GET /public/:slug`.
-- Sem conta para o convidado — identificação leve (nome + token local para editar a própria resposta).
-- Front (tela 6): card "Você vai?" com chips, nota dinâmica por resposta, pills de confirmados.
-- Visão do organizador (tela 5 ou detalhe do evento): contagem de confirmados; "quem pagou" fica para depois (fora de escopo desta fatia).
-
 ## Checklist
 
-- [ ] Endpoint de RSVP + persistência
-- [ ] Confirmados na página pública
-- [ ] Chips + nota dinâmica no front
-- [ ] Roadmap atualizado + commit
+- [x] Modelo `Rsvp` (migration `rsvp`) — nome, resposta (`vou | levo-alguem | nao-vou`), token secreto por convidado
+- [x] `POST /public/:slug/rsvp`: cria a resposta e devolve o token; com token, **atualiza** a própria resposta sem duplicar (sem conta para o convidado)
+- [x] `GET /public/:slug` passa a incluir `confirmed` (quem vai; `+1` para quem leva alguém; `nao-vou` fica de fora)
+- [x] Front (tela 6): input de nome + chips `Vou! / Vou levar alguém / Não vou` (ativo = ember), nota dinâmica por resposta, pills de confirmados; token/nome guardados em `localStorage` por slug para reeditar
+- [x] e2e: confirmar, +1, trocar resposta via token, validações — 4 testes
+- [x] Roadmap atualizado + commit
+
+## Como verificar
+
+```bash
+npm test
+# ou no browser: abrir /c/<slug>, responder, recarregar — a resposta persiste e os confirmados atualizam
+```
+
+## Notas
+
+- "Quem pagou" (visão do organizador) segue fora de escopo — candidata a fatia 7 junto com um painel "meus churras" (a API `GET /barbecues` já lista).

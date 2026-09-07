@@ -1,12 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { RsvpService } from '../rsvp/rsvp.service';
 import { PixKeyType, buildPixPayload, normalizePixKey } from './pix';
 
 const CATEGORY_ORDER = ['Carnes', 'Bebidas', 'Acompanhamentos', 'Essenciais'];
 
 @Injectable()
 export class SharingService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly rsvp: RsvpService,
+  ) {}
 
   private async bySlug(slug: string) {
     const barbecue = await this.prisma.barbecue.findUnique({
@@ -44,6 +48,7 @@ export class SharingService {
       perAdult: b.perAdultCents / 100,
       organizer: b.owner.name,
       categories,
+      confirmed: await this.rsvp.confirmed(b.id),
       pix: pixKey ? { type: b.pixType, key: pixKey, payload: this.payloadFor(b, pixKey) } : null,
     };
   }

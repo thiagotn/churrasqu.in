@@ -40,8 +40,23 @@ model Barbecue {
   owner        User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId      String
   items        BarbecueItem[]
+  rsvps        Rsvp[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
+}
+
+model Rsvp {
+  id         String   @id @default(cuid())
+  barbecue   Barbecue @relation(fields: [barbecueId], references: [id], onDelete: Cascade)
+  barbecueId String
+  guestName  String
+  response   String // vou | levo-alguem | nao-vou
+  // segredo devolvido ao convidado para editar a própria resposta (sem conta)
+  token      String   @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([barbecueId])
 }
 
 model BarbecueItem {
