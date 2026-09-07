@@ -13,7 +13,7 @@ import {
 
 export const DEFAULT_BEER_PER_ADULT_L = 1.5;
 
-const ALCOHOL_MODES: AlcoholMode[] = ['lista', 'byob', 'bar', 'none'];
+export const ALCOHOL_MODES: AlcoholMode[] = ['lista', 'byob', 'bar', 'none'];
 
 /** Kg arredondado para múltiplo de 0.5, mínimo 0.5. */
 export const roundKg = (v: number): number => Math.max(0.5, Math.round(v * 2) / 2);

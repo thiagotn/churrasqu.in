@@ -37,6 +37,8 @@ export interface TierSeed {
   optional: OptionalSeed[];
 }
 
+export const TIER_IDS = ['basico', 'medio', 'gourmet'] as const;
+
 export const TIERS: Record<TierId, TierSeed> = {
   basico: {
     id: 'basico',

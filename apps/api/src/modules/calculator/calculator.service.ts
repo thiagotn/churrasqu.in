@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { calculate } from './domain/calculator';
-import { makeShareSlug } from './domain/slug';
-import { Adjustments, CalculationResult, CalculatorInput } from './domain/types';
+import {
+  Adjustments,
+  CalculationResult,
+  CalculatorInput,
+  calculate,
+  makeShareSlug,
+} from '@churrasquin/calculator';
 
 @Injectable()
 export class CalculatorService {

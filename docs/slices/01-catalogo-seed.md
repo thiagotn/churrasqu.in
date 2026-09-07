@@ -1,6 +1,6 @@
 # Fatia 1 — Catálogo e seed de preços + API de estimativa
 
-**Status: WIP**
+**Status: DONE**
 
 ## Objetivo
 
@@ -18,13 +18,13 @@ O catálogo (níveis, cortes, proporções, acompanhamentos, preços de referên
 
 ## Checklist
 
-- [ ] `packages/calculator` criado; api e web dependem dele
-- [ ] Módulo `catalog` com `GET /catalog/tiers`
-- [ ] Módulo `barbecues` com `POST /barbecues/estimate` (+ `tierTotals`)
-- [ ] ValidationPipe global + DTOs com class-validator
-- [ ] Teste de integridade do catálogo (proporções por nível somam 1)
-- [ ] e2e Supertest: estimativa válida, payload inválido → 400, 0 adultos → 400
-- [ ] Roadmap atualizado + commit
+- [x] `packages/calculator` criado; api e web dependem dele
+- [x] Módulo `catalog` com `GET /catalog/tiers`
+- [x] Módulo `barbecues` com `POST /barbecues/estimate` (+ `tierTotals`)
+- [x] ValidationPipe global + DTOs com class-validator (+ CORS para o front)
+- [x] Teste de integridade do catálogo (proporções por nível somam 1)
+- [x] e2e Supertest: estimativa válida, ajustes aplicados, payload inválido → 400, 0 adultos → 400
+- [x] Roadmap atualizado + commit
 
 ## Como verificar
 
