@@ -1,0 +1,37 @@
+@import 'tailwindcss';
+
+/* Design tokens do handoff (design_handoff_churrasquin/README.md) */
+@theme {
+  --color-ink: #17130f;
+  --color-paper: #fff8ea;
+  --color-cream: #f2e6d0;
+  --color-ember: #c2341f;
+  --color-ember-hover: #e2402a;
+  --color-mustard: #f2b22e;
+  --color-brand-sky: #2c5fa8;
+  --color-muted: #7a6a55;
+  --color-body-text: #4a3e31;
+  --color-cover-dark: #a82a17;
+
+  --font-display: var(--font-bangers), 'Bangers', cursive;
+  --font-sans: var(--font-nunito), 'Nunito', ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-comic-sm: 3px 3px 0 #17130f;
+  --shadow-comic: 5px 5px 0 #17130f;
+  --shadow-comic-lg: 8px 8px 0 #17130f;
+  --shadow-comic-xl: 10px 10px 0 #17130f;
+}
+
+body {
+  background-color: var(--color-cream);
+  background-image:
+    radial-gradient(#17130f1f 1.4px, transparent 1.5px),
+    radial-gradient(#c2341f14 1.4px, transparent 1.5px);
+  background-size:
+    18px 18px,
+    18px 18px;
+  background-position:
+    0 0,
+    9px 9px;
+  color: var(--color-ink);
+}

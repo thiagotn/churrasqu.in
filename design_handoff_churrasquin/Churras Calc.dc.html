@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:ital,wght@0,400;0,600;0,700;0,900;1,700&display=swap" rel="stylesheet" />
+<style>
+  body { margin: 0; background: #F2E6D0; color: #17130F; font-family: Nunito, system-ui, sans-serif; }
+  * { box-sizing: border-box; }
+  a { color: #C2341F; text-decoration: none; }
+  a:hover { color: #17130F; }
+  input, button, select { font-family: inherit; }
+  @keyframes floaty { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-8px) rotate(-2deg); } }
+</style>
+</helmet>
+
+<div style="min-height: 100vh; background-color: #F2E6D0; background-image: radial-gradient(#17130F1F 1.4px, transparent 1.5px), radial-gradient(#C2341F14 1.4px, transparent 1.5px); background-size: 18px 18px, 18px 18px; background-position: 0 0, 9px 9px; padding: clamp(14px, 3vw, 36px) clamp(12px, 3vw, 40px) 80px;">
+
+  <div style="max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: clamp(18px, 3vw, 34px);">
+
+    <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="width: 66px; height: 66px; flex: none; border-radius: 50%; border: 4px solid #17130F; box-shadow: 5px 5px 0 #17130F; background: #F2E6D0; display: grid; place-items: center; padding: 5px;">
+          <img src="assets/logo.png" alt="churrasqu.in" style="width: 100%; height: 100%; object-fit: contain; display: block;" />
+        </div>
+        <div>
+          <div style="font-family: Bangers, cursive; font-size: clamp(30px, 5vw, 44px); line-height: 0.92; letter-spacing: 1.5px; color: #17130F;">CHURRASQU<span style="color: #C2341F;">.IN</span></div>
+          <div style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #7A6A55;">Ninguém paga a mais. Ninguém passa fome.</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <sc-if value="{{ loggedIn }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; align-items: center; gap: 10px; border: 3px solid #17130F; background: #FFF8EA; padding: 8px 14px; border-radius: 999px; box-shadow: 4px 4px 0 #17130F; font-weight: 800;">
+            <span style="width: 26px; height: 26px; border-radius: 50%; background: #2C5FA8; color: #FFF8EA; display: grid; place-items: center; font-family: Bangers, cursive; font-size: 16px; padding-top: 2px;">{{ userInitial }}</span>
+            {{ userName }}
+          </div>
+        </sc-if>
+        <button onClick="{{ restart }}" style="border: 3px solid #17130F; background: #FFF8EA; font-weight: 800; padding: 10px 16px; border-radius: 999px; box-shadow: 4px 4px 0 #17130F; cursor: pointer;" style-hover="background: #F2B22E; transform: translate(2px, 2px); box-shadow: 2px 2px 0 #17130F;">Começar de novo</button>
+      </div>
+    </header>
+
+    <sc-for list="{{ steps }}" as="st" hint-placeholder-count="0">
+      <div style="display: none;">{{ st.label }}</div>
+    </sc-for>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+      <sc-for list="{{ steps }}" as="st" hint-placeholder-count="3">
+        <button onClick="{{ st.go }}" style="{{ st.style }}">{{ st.label }}</button>
+      </sc-for>
+    </div>
+
+    <!-- ============ SETUP ============ -->
+    <sc-if value="{{ isSetup }}" hint-placeholder-val="{{ true }}">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: clamp(16px, 2.5vw, 28px); align-items: start;">
+
+        <div style="display: flex; flex-direction: column; gap: 20px; border: 4px solid #17130F; background: #FFF8EA; box-shadow: 10px 10px 0 #17130F; padding: clamp(18px, 2.5vw, 30px);">
+          <div>
+            <div style="font-family: Bangers, cursive; font-size: clamp(26px, 3.4vw, 34px); letter-spacing: 1px;">1. Quem vai?</div>
+            <div style="font-weight: 600; color: #7A6A55;">A conta muda bastante conforme o público. Ajuste no dedo.</div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 12px;">
+            <sc-for list="{{ people }}" as="p" hint-placeholder-count="3">
+              <div style="border: 3px solid #17130F; background: #F2E6D0; padding: 14px; display: flex; flex-direction: column; gap: 10px; align-items: center;">
+                <div style="font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; font-size: 13px;">{{ p.label }}</div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <button onClick="{{ p.dec }}" style="width: 44px; height: 44px; flex: none; border: 3px solid #17130F; background: #FFF8EA; font-weight: 900; font-size: 26px; line-height: 1; cursor: pointer; border-radius: 12px; box-shadow: 3px 3px 0 #17130F;" style-hover="background: #F2B22E;">−</button>
+                  <div style="font-family: Bangers, cursive; font-size: 42px; min-width: 46px; text-align: center; line-height: 1;">{{ p.value }}</div>
+                  <button onClick="{{ p.inc }}" style="width: 44px; height: 44px; flex: none; border: 3px solid #17130F; background: #C2341F; color: #FFF8EA; font-weight: 900; font-size: 26px; line-height: 1; cursor: pointer; border-radius: 12px; box-shadow: 3px 3px 0 #17130F;" style-hover="background: #E2402A;">+</button>
+                </div>
+                <div style="font-size: 12px; font-weight: 700; color: #7A6A55;">{{ p.hint }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="height: 3px; background: #17130F1A;"></div>
+
+          <div>
+            <div style="font-family: Bangers, cursive; font-size: clamp(26px, 3.4vw, 34px); letter-spacing: 1px;">2. Onde vai ser?</div>
+            <div style="font-weight: 600; color: #7A6A55; margin-bottom: 12px;">Endereço completo — vai direto no convite.</div>
+            <div style="display: grid; gap: 12px;">
+              <label style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 0;">
+                <span style="font-size: 12px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: #7A6A55;">Endereço</span>
+                <input value="{{ eventAddress }}" onChange="{{ setEventAddress }}" placeholder="Rua, número e complemento" style="width: 100%; min-width: 0; height: 50px; border: 3px solid #17130F; background: #FFF; padding: 0 14px; font-weight: 700; font-size: 16px;" />
+              </label>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr)); gap: 12px;">
+                <label style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 0;">
+                  <span style="font-size: 12px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: #7A6A55; overflow-wrap: anywhere;">Bairro</span>
+                  <input value="{{ eventCity }}" onChange="{{ setEventCity }}" placeholder="Vila Brasa, São Paulo" style="width: 100%; min-width: 0; height: 50px; border: 3px solid #17130F; background: #FFF; padding: 0 14px; font-weight: 700; font-size: 16px;" />
+                </label>
+                <label style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 0;">
+                  <span style="font-size: 12px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: #7A6A55; overflow-wrap: anywhere;">Referência</span>
+                  <input value="{{ eventHint }}" onChange="{{ setEventHint }}" placeholder="Portão azul, fundo" style="width: 100%; min-width: 0; height: 50px; border: 3px solid #17130F; background: #FFF; padding: 0 14px; font-weight: 700; font-size: 16px;" />
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-family: Bangers, cursive; font-size: clamp(26px, 3.4vw, 34px); letter-spacing: 1px;">3. Que dia e a que horas começa?</div>
+            <div style="font-weight: 600; color: #7A6A55; margin-bottom: 12px;">Do horário de início ao fim a gente estima o consumo.</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr)); gap: 12px;">
+              <label style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 0;">
+                <span style="font-size: 12px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: #7A6A55;">Data</span>
+                <input value="{{ eventDay }}" onChange="{{ setEventDay }}" type="date" style="width: 100%; min-width: 0; height: 50px; border: 3px solid #17130F; background: #FFF; padding: 0 12px; font-weight: 700; font-size: 16px;" />
+              </label>
+              <label style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 0;">
+                <span style="font-size: 12px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: #7A6A55;">Começa</span>
+                <input value="{{ startTime }}" onChange="{{ setStartTime }}" type="time" style="width: 100%; min-width: 0; height: 50px; border: 3px solid #17130F; background: #FFF; padding: 0 12px; font-weight: 700; font-size: 16px;" />
+              </label>
+              <label style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 0;">
+                <span style="font-size: 12px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: #7A6A55;">Termina</span>
+                <input value="{{ endTime }}" onChange="{{ setEndTime }}" type="time" style="width: 100%; min-width: 0; height: 50px; border: 3px solid #17130F; background: #FFF; padding: 0 12px; font-weight: 700; font-size: 16px;" />
+              </label>
+            </div>
+          </div>
+
+          <div style="border: 3px dashed #17130F66; padding: 16px; background: #F2E6D0; display: flex; flex-direction: column; gap: 12px;">
+            <div>
+              <div style="font-family: Bangers, cursive; font-size: clamp(22px, 3vw, 28px); letter-spacing: 1px;">4. E a bebida alcoólica?</div>
+              <div style="font-size: 13px; font-weight: 700; color: #7A6A55;">Decide se entra no rateio, se cada um leva a sua ou se compra no local.</div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 10px;">
+              <sc-for list="{{ alcoholModes }}" as="o" hint-placeholder-count="4">
+                <button onClick="{{ o.go }}" style="{{ o.style }}">
+                  <div style="font-weight: 900; font-size: 15px;">{{ o.label }}</div>
+                  <div style="font-weight: 700; font-size: 12px; opacity: 0.85;">{{ o.hint }}</div>
+                </button>
+              </sc-for>
+            </div>
+            <sc-if value="{{ isBarMode }}" hint-placeholder-val="{{ false }}">
+              <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; border: 3px solid #17130F; background: #FFF8EA; padding: 12px 14px;">
+                <div style="min-width: 0;">
+                  <div style="font-weight: 900;">Gasto médio no bar do local</div>
+                  <div style="font-size: 12px; font-weight: 700; color: #7A6A55;">Fica fora do rateio — cada um paga a própria consumação.</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span style="font-weight: 900;">R$</span>
+                  <input value="{{ barSpend }}" onChange="{{ setBarSpend }}" style="width: 100px; min-width: 0; height: 44px; border: 3px solid #17130F; background: #FFF; text-align: center; font-weight: 900; font-size: 15px;" />
+                  <span style="font-weight: 800; font-size: 13px;">/ adulto</span>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+
+          <button onClick="{{ goTiers }}" style="border: 4px solid #17130F; background: #C2341F; color: #FFF8EA; font-family: Bangers, cursive; font-size: clamp(24px, 3vw, 32px); letter-spacing: 1.5px; padding: 16px 22px; cursor: pointer; box-shadow: 8px 8px 0 #17130F;" style-hover="background: #E2402A; transform: translate(3px, 3px); box-shadow: 5px 5px 0 #17130F;">Calcular meu churras →</button>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 18px;">
+          <div style="position: relative; border: 4px solid #17130F; background: #F2B22E; box-shadow: 10px 10px 0 #17130F; padding: 22px;">
+            <div style="font-family: Bangers, cursive; font-size: clamp(30px, 4vw, 40px); line-height: 1; letter-spacing: 1px;">Resumo rápido</div>
+            <div style="display: grid; gap: 10px; margin-top: 16px;">
+              <div style="display: flex; justify-content: space-between; font-weight: 800; border-bottom: 3px dotted #17130F55; padding-bottom: 6px;"><span>Convidados</span><span>{{ guests }}</span></div>
+              <div style="display: flex; justify-content: space-between; font-weight: 800; border-bottom: 3px dotted #17130F55; padding-bottom: 6px;"><span>Carne estimada</span><span>{{ meatLabel }}</span></div>
+              <div style="display: flex; justify-content: space-between; gap: 12px; font-weight: 800; border-bottom: 3px dotted #17130F55; padding-bottom: 6px;"><span>Local</span><span style="text-align: right;">{{ localLabel }}</span></div>
+              <div style="display: flex; justify-content: space-between; font-weight: 800;"><span>Horário</span><span>{{ durationLabel }}</span></div>
+            </div>
+            <div style="margin-top: 14px; border: 3px solid #17130F; background: #FFF8EA; padding: 12px; font-weight: 800; font-size: 14px;">{{ alcoholNote }}</div>
+          </div>
+
+          <div style="border: 4px solid #17130F; background: #FFF8EA; box-shadow: 10px 10px 0 #17130F; overflow: hidden;">
+            <div style="height: clamp(180px, 26vw, 280px); border-bottom: 4px solid #17130F; overflow: hidden;">
+              <img src="assets/quintal.jpeg" alt="Quintal de churrasco em estilo gibi" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+            </div>
+            <div style="padding: 16px 18px; font-weight: 700; color: #4A3E31;">Dica: 400g de carne por homem, 300g por mulher e 200g por criança é o ponto de partida clássico. A gente ajusta pelo tempo de festa.</div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ TIERS ============ -->
+    <sc-if value="{{ isTiers }}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; justify-content: space-between;">
+          <div>
+            <div style="font-family: Bangers, cursive; font-size: clamp(32px, 5vw, 48px); letter-spacing: 1.5px; line-height: 1;">Escolha o nível do churras</div>
+            <div style="font-weight: 700; color: #7A6A55;">{{ guests }} convidados · {{ meatLabel }} de carne · {{ localLabel }}</div>
+          </div>
+          <button onClick="{{ goSetup }}" style="border: 3px solid #17130F; background: #FFF8EA; font-weight: 800; padding: 10px 18px; box-shadow: 4px 4px 0 #17130F; cursor: pointer;" style-hover="background: #F2B22E;">← Ajustar pessoas</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr)); gap: clamp(16px, 2.4vw, 26px);">
+          <sc-for list="{{ tierCards }}" as="t" hint-placeholder-count="3">
+            <div style="{{ t.cardStyle }}">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
+                <div style="display: flex; align-items: baseline; gap: 8px; min-width: 0;">
+                  <div style="font-family: Bangers, cursive; font-size: clamp(30px, 4vw, 40px); letter-spacing: 1px; line-height: 1;">{{ t.name }}</div>
+                  <div style="font-family: Bangers, cursive; font-size: clamp(22px, 3vw, 30px); letter-spacing: 2px; line-height: 1; color: #C2341F;">{{ t.price }}</div>
+                </div>
+                <div style="{{ t.badgeStyle }}">{{ t.badge }}</div>
+              </div>
+              <div style="font-weight: 700; color: #4A3E31; min-height: 46px;">{{ t.pitch }}</div>
+              <div style="border: 3px solid #17130F; background: #FFF8EA; padding: 14px;">
+                <div style="font-size: 12px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #7A6A55;">Total estimado</div>
+                <div style="font-family: Bangers, cursive; font-size: clamp(34px, 4.6vw, 46px); line-height: 1;">{{ t.total }}</div>
+                <div style="font-weight: 800; color: #C2341F;">{{ t.perAdult }} por adulto</div>
+              </div>
+              <div style="display: grid; gap: 8px;">
+                <sc-for list="{{ t.highlights }}" as="h" hint-placeholder-count="4">
+                  <div style="display: flex; gap: 10px; align-items: baseline; font-weight: 700; font-size: 15px;"><span style="width: 9px; height: 9px; flex: none; background: #C2341F; border: 2px solid #17130F; border-radius: 50%;"></span>{{ h }}</div>
+                </sc-for>
+              </div>
+              <button onClick="{{ t.choose }}" style="{{ t.btnStyle }}">{{ t.btnLabel }}</button>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ EDIT ============ -->
+    <sc-if value="{{ isEdit }}" hint-placeholder-val="{{ false }}">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: clamp(16px, 2.4vw, 28px); align-items: start;">
+
+        <div style="display: flex; flex-direction: column; gap: 18px; min-width: 0;">
+          <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; justify-content: space-between;">
+            <div>
+              <div style="font-family: Bangers, cursive; font-size: clamp(30px, 4.4vw, 44px); letter-spacing: 1.5px; line-height: 1;">Lista {{ tierName }}</div>
+              <div style="font-weight: 700; color: #7A6A55;">Edite quantidades, tire o que não vai e o total se ajusta na hora.</div>
+            </div>
+            <button onClick="{{ resetItems }}" style="border: 3px solid #17130F; background: #FFF8EA; font-weight: 800; padding: 9px 16px; box-shadow: 4px 4px 0 #17130F; cursor: pointer;" style-hover="background: #F2B22E;">Restaurar sugestão</button>
+          </div>
+
+          <sc-for list="{{ groups }}" as="g" hint-placeholder-count="4">
+            <div style="border: 4px solid #17130F; background: #FFF8EA; box-shadow: 8px 8px 0 #17130F; min-width: 0;">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 16px; background: #17130F; color: #FFF8EA;">
+                <div style="font-family: Bangers, cursive; font-size: 26px; letter-spacing: 1.5px;">{{ g.name }}</div>
+                <div style="font-weight: 800; font-size: 15px;">{{ g.subtotal }}</div>
+              </div>
+              <div style="display: flex; flex-direction: column;">
+                <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="3">
+                  <div style="display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 2px solid #17130F1A;">
+                    <div style="min-width: 150px; flex: 1 1 160px;">
+                      <div style="font-weight: 900; font-size: 16px;">{{ it.name }}</div>
+                      <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+                        <span style="font-size: 12px; font-weight: 700; color: #7A6A55;">{{ it.unitLabel }}</span>
+                        <span style="font-size: 13px; font-weight: 900;">R$</span>
+                        <input value="{{ it.priceText }}" onChange="{{ it.setPrice }}" title="Preço unitário" style="width: 82px; height: 34px; border: 3px solid #17130F; background: #FFF; text-align: center; font-weight: 900; font-size: 14px; border-radius: 10px;" />
+                      </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <button onClick="{{ it.dec }}" style="width: 40px; height: 40px; border: 3px solid #17130F; background: #F2E6D0; font-weight: 900; font-size: 24px; line-height: 1; cursor: pointer; border-radius: 10px;" style-hover="background: #F2B22E;">−</button>
+                      <input value="{{ it.qtyText }}" onChange="{{ it.set }}" style="width: 72px; height: 40px; border: 3px solid #17130F; background: #FFF; text-align: center; font-weight: 900; font-size: 15px; border-radius: 10px;" />
+                      <button onClick="{{ it.inc }}" style="width: 40px; height: 40px; border: 3px solid #17130F; background: #F2E6D0; font-weight: 900; font-size: 24px; line-height: 1; cursor: pointer; border-radius: 10px;" style-hover="background: #F2B22E;">+</button>
+                      <div style="font-weight: 900; min-width: 92px; text-align: right;">{{ it.total }}</div>
+                      <button onClick="{{ it.remove }}" title="Remover" style="width: 40px; height: 40px; border: 3px solid #17130F; background: #FFF8EA; color: #C2341F; font-weight: 900; font-size: 16px; cursor: pointer; border-radius: 10px;" style-hover="background: #C2341F; color: #FFF8EA;">✕</button>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+
+          <div style="border: 4px dashed #17130F66; background: #F7EEDC; padding: 16px;">
+            <div style="font-family: Bangers, cursive; font-size: 26px; letter-spacing: 1px;">Bora incluir mais?</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px;">
+              <sc-for list="{{ suggestions }}" as="s" hint-placeholder-count="3">
+                <button onClick="{{ s.add }}" style="border: 3px solid #17130F; background: #FFF8EA; font-weight: 800; padding: 10px 14px; border-radius: 999px; box-shadow: 3px 3px 0 #17130F; cursor: pointer;" style-hover="background: #F2B22E;">+ {{ s.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 16px; position: sticky; top: 16px;">
+          <div style="border: 4px solid #17130F; background: #C2341F; color: #FFF8EA; box-shadow: 10px 10px 0 #17130F; padding: 22px;">
+            <div style="font-size: 12px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8;">Total do churras</div>
+            <div style="font-family: Bangers, cursive; font-size: clamp(44px, 6vw, 62px); line-height: 0.95;">{{ total }}</div>
+            <div style="display: grid; gap: 10px; margin-top: 14px;">
+              <div style="display: flex; justify-content: space-between; font-weight: 800; border-bottom: 3px dotted #FFF8EA55; padding-bottom: 6px;"><span>Por adulto</span><span>{{ perAdult }}</span></div>
+              <div style="display: flex; justify-content: space-between; font-weight: 800; border-bottom: 3px dotted #FFF8EA55; padding-bottom: 6px;"><span>Itens na lista</span><span>{{ itemCount }}</span></div>
+              <div style="display: flex; justify-content: space-between; font-weight: 800;"><span>Carne total</span><span>{{ meatChosen }}</span></div>
+            </div>
+          </div>
+          <button onClick="{{ goShare }}" style="border: 4px solid #17130F; background: #F2B22E; font-family: Bangers, cursive; font-size: clamp(24px, 3vw, 30px); letter-spacing: 1.5px; padding: 16px; cursor: pointer; box-shadow: 8px 8px 0 #17130F;" style-hover="transform: translate(3px, 3px); box-shadow: 5px 5px 0 #17130F;">Salvar e compartilhar</button>
+          <button onClick="{{ goTiers }}" style="border: 3px solid #17130F; background: #FFF8EA; font-weight: 800; padding: 12px; box-shadow: 4px 4px 0 #17130F; cursor: pointer;" style-hover="background: #F2E6D0;">← Trocar nível da lista</button>
+          <div style="border: 3px solid #17130F; background: #FFF8EA; padding: 14px; font-weight: 700; font-size: 14px; color: #4A3E31;">Salvar exige uma conta rapidinha — é o que garante que o link do seu churras continue no ar.</div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ AUTH ============ -->
+    <sc-if value="{{ isAuth }}" hint-placeholder-val="{{ false }}">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: clamp(16px, 2.4vw, 28px); align-items: center;">
+        <div style="border: 4px solid #17130F; background: #FFF8EA; box-shadow: 10px 10px 0 #17130F; padding: clamp(20px, 3vw, 32px); display: flex; flex-direction: column; gap: 18px;">
+          <div>
+            <div style="font-family: Bangers, cursive; font-size: clamp(30px, 4.4vw, 42px); letter-spacing: 1.5px; line-height: 1;">{{ authTitle }}</div>
+            <div style="font-weight: 700; color: #7A6A55;">Só pra salvar seu churras e gerar o link público.</div>
+          </div>
+          <div style="display: flex; border: 3px solid #17130F; overflow: hidden; width: fit-content;">
+            <sc-for list="{{ authTabs }}" as="t" hint-placeholder-count="2">
+              <button onClick="{{ t.go }}" style="{{ t.style }}">{{ t.label }}</button>
+            </sc-for>
+          </div>
+          <div style="display: grid; gap: 12px;">
+            <sc-for list="{{ authFields }}" as="f" hint-placeholder-count="3">
+              <label style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 0;">
+                <span style="font-size: 12px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: #7A6A55;">{{ f.label }}</span>
+                <input value="{{ f.value }}" onChange="{{ f.set }}" type="{{ f.type }}" placeholder="{{ f.placeholder }}" style="width: 100%; min-width: 0; height: 50px; border: 3px solid #17130F; background: #FFF; padding: 0 14px; font-weight: 700; font-size: 16px;" />
+              </label>
+            </sc-for>
+          </div>
+          <button onClick="{{ submitAuth }}" style="border: 4px solid #17130F; background: #2C5FA8; color: #FFF8EA; font-family: Bangers, cursive; font-size: clamp(22px, 3vw, 28px); letter-spacing: 1.5px; padding: 15px; cursor: pointer; box-shadow: 7px 7px 0 #17130F;" style-hover="transform: translate(3px, 3px); box-shadow: 4px 4px 0 #17130F;">{{ authCta }}</button>
+          <button onClick="{{ goEdit }}" style="border: none; background: none; font-weight: 800; color: #7A6A55; cursor: pointer; text-decoration: underline;">← Voltar para a lista</button>
+        </div>
+        <div style="border: 4px solid #17130F; background: #2C5FA8; color: #FFF8EA; box-shadow: 10px 10px 0 #17130F; padding: clamp(20px, 3vw, 30px); display: flex; flex-direction: column; gap: 14px;">
+          <div style="font-family: Bangers, cursive; font-size: clamp(28px, 3.6vw, 36px); letter-spacing: 1px; line-height: 1;">Com a conta você pode…</div>
+          <sc-for list="{{ perks }}" as="p" hint-placeholder-count="4">
+            <div style="display: flex; gap: 12px; align-items: baseline; font-weight: 700;"><span style="width: 10px; height: 10px; flex: none; background: #F2B22E; border: 2px solid #17130F; border-radius: 50%;"></span>{{ p }}</div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ SHARE ============ -->
+    <sc-if value="{{ isShare }}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <div style="border: 4px solid #17130F; background: #F2B22E; box-shadow: 10px 10px 0 #17130F; padding: clamp(18px, 2.6vw, 28px); display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-family: Bangers, cursive; font-size: clamp(30px, 4.6vw, 46px); letter-spacing: 1.5px; line-height: 1;">Churras salvo! Agora é só espalhar.</div>
+            <div style="font-weight: 800;">Total {{ total }} · {{ perAdult }} por adulto · {{ guests }} convidados</div>
+          </div>
+          <button onClick="{{ goPublic }}" style="border: 4px solid #17130F; background: #17130F; color: #FFF8EA; font-family: Bangers, cursive; font-size: 24px; letter-spacing: 1.5px; padding: 14px 20px; cursor: pointer; box-shadow: 6px 6px 0 #C2341F;" style-hover="transform: translate(3px, 3px); box-shadow: 3px 3px 0 #C2341F;">Ver página pública</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: clamp(16px, 2.4vw, 26px); align-items: start;">
+
+          <div style="border: 4px solid #17130F; background: #FFF8EA; box-shadow: 8px 8px 0 #17130F; padding: 22px; display: flex; flex-direction: column; gap: 16px;">
+            <div style="font-family: Bangers, cursive; font-size: 28px; letter-spacing: 1px;">Dados do evento</div>
+            <label style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 0;">
+              <span style="font-size: 12px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: #7A6A55;">Nome do churras</span>
+              <input value="{{ eventName }}" onChange="{{ setEventName }}" style="width: 100%; min-width: 0; height: 48px; border: 3px solid #17130F; background: #FFF; padding: 0 14px; font-weight: 800; font-size: 16px;" />
+            </label>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr)); gap: 12px;">
+              <label style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 0;">
+                <span style="font-size: 12px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: #7A6A55;">Data</span>
+                <input value="{{ eventDay }}" onChange="{{ setEventDay }}" type="date" style="width: 100%; min-width: 0; height: 48px; border: 3px solid #17130F; background: #FFF; padding: 0 12px; font-weight: 800; font-size: 16px;" />
+              </label>
+              <label style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 0;">
+                <span style="font-size: 12px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: #7A6A55;">Começa</span>
+                <input value="{{ startTime }}" onChange="{{ setStartTime }}" type="time" style="width: 100%; min-width: 0; height: 48px; border: 3px solid #17130F; background: #FFF; padding: 0 12px; font-weight: 800; font-size: 16px;" />
+              </label>
+              <label style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 0;">
+                <span style="font-size: 12px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: #7A6A55;">Termina</span>
+                <input value="{{ endTime }}" onChange="{{ setEndTime }}" type="time" style="width: 100%; min-width: 0; height: 48px; border: 3px solid #17130F; background: #FFF; padding: 0 12px; font-weight: 800; font-size: 16px;" />
+              </label>
+            </div>
+            <label style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 0;">
+              <span style="font-size: 12px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: #7A6A55;">Endereço</span>
+              <input value="{{ eventAddress }}" onChange="{{ setEventAddress }}" style="width: 100%; min-width: 0; height: 48px; border: 3px solid #17130F; background: #FFF; padding: 0 14px; font-weight: 800; font-size: 16px;" />
+            </label>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr)); gap: 12px;">
+              <label style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 0;">
+                <span style="font-size: 12px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: #7A6A55; overflow-wrap: anywhere;">Bairro</span>
+                <input value="{{ eventCity }}" onChange="{{ setEventCity }}" style="width: 100%; min-width: 0; height: 48px; border: 3px solid #17130F; background: #FFF; padding: 0 14px; font-weight: 800; font-size: 16px;" />
+              </label>
+              <label style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 0;">
+                <span style="font-size: 12px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: #7A6A55; overflow-wrap: anywhere;">Referência</span>
+                <input value="{{ eventHint }}" onChange="{{ setEventHint }}" style="width: 100%; min-width: 0; height: 48px; border: 3px solid #17130F; background: #FFF; padding: 0 14px; font-weight: 800; font-size: 16px;" />
+              </label>
+            </div>
+          </div>
+
+          <div style="border: 4px solid #17130F; background: #FFF8EA; box-shadow: 8px 8px 0 #17130F; padding: 22px; display: flex; flex-direction: column; gap: 16px;">
+            <div style="font-family: Bangers, cursive; font-size: 28px; letter-spacing: 1px;">Link público</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+              <div style="flex: 1 1 180px; min-width: 0; border: 3px solid #17130F; background: #FFF; padding: 13px; font-family: ui-monospace, monospace; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ shareLink }}</div>
+              <button onClick="{{ copyLink }}" style="border: 3px solid #17130F; background: #C2341F; color: #FFF8EA; font-weight: 900; padding: 12px 18px; cursor: pointer; box-shadow: 4px 4px 0 #17130F;" style-hover="background: #E2402A;">{{ copyLabel }}</button>
+            </div>
+            <div style="height: 3px; background: #17130F1A;"></div>
+            <div style="font-family: Bangers, cursive; font-size: 28px; letter-spacing: 1px;">Chave Pix pra rateio</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+              <sc-for list="{{ pixTypes }}" as="o" hint-placeholder-count="3">
+                <button onClick="{{ o.go }}" style="{{ o.style }}">{{ o.label }}</button>
+              </sc-for>
+            </div>
+            <input value="{{ pixKey }}" onChange="{{ setPixKey }}" placeholder="{{ pixPlaceholder }}" style="width: 100%; min-width: 0; height: 48px; border: 3px solid #17130F; background: #FFF; padding: 0 14px; font-weight: 800; font-size: 16px;" />
+            <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; border: 3px dashed #17130F66; padding: 14px; background: #F2E6D0;">
+              <div style="font-weight: 900;">Cobrar por adulto</div>
+              <div style="font-family: Bangers, cursive; font-size: 30px; line-height: 1;">{{ perAdult }}</div>
+            </div>
+          </div>
+
+          <div style="border: 4px solid #17130F; background: #17130F; color: #FFF8EA; box-shadow: 8px 8px 0 #C2341F; padding: 22px; display: flex; flex-direction: column; gap: 16px; align-items: center; text-align: center;">
+            <div style="font-family: Bangers, cursive; font-size: 28px; letter-spacing: 1px;">QR Code do churras</div>
+            <div style="width: 100%; max-width: 240px; background: #FFF8EA; border: 4px solid #FFF8EA; padding: 10px;">{{ qr }}</div>
+            <div style="font-weight: 700; font-size: 14px; opacity: 0.85;">Aponta a câmera e cai direto na lista, com a chave Pix e o valor por pessoa.</div>
+            <button onClick="{{ noop }}" style="width: 100%; border: 3px solid #FFF8EA; background: #F2B22E; color: #17130F; font-weight: 900; padding: 13px; cursor: pointer;" style-hover="background: #FFF8EA;">Baixar QR em PNG</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ PUBLIC ============ -->
+    <sc-if value="{{ isPublic }}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 18px;">
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; border: 3px dashed #17130F66; padding: 12px 16px; background: #F7EEDC;">
+          <div style="font-family: ui-monospace, monospace; font-size: 12px; color: #6A5A46;">prévia da página pública · {{ shareLink }}</div>
+          <button onClick="{{ goShare }}" style="border: 3px solid #17130F; background: #FFF8EA; font-weight: 800; padding: 9px 16px; box-shadow: 4px 4px 0 #17130F; cursor: pointer;" style-hover="background: #F2B22E;">← Voltar ao compartilhamento</button>
+        </div>
+
+        <div style="border: 4px solid #17130F; background: #C2341F; color: #FFF8EA; box-shadow: 10px 10px 0 #17130F; overflow: hidden;">
+          <div style="height: clamp(150px, 22vw, 230px); border-bottom: 4px solid #17130F; overflow: hidden;">
+            <img src="assets/invite-cover.jpeg" alt="Churrasqueira com brasas em estilo gibi" style="width: 100%; height: 100%; object-fit: cover; object-position: center; display: block;" />
+          </div>
+          <div style="padding: clamp(18px, 2.6vw, 28px); display: flex; flex-wrap: wrap; gap: 18px; justify-content: space-between; align-items: flex-end;">
+            <div>
+              <div style="font-size: 12px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; opacity: 0.85;">Você foi convidado</div>
+              <div style="font-family: Bangers, cursive; font-size: clamp(34px, 6vw, 58px); letter-spacing: 1.5px; line-height: 0.95;">{{ eventName }}</div>
+              <div style="font-weight: 800;">{{ eventDate }}</div>
+              <div style="font-weight: 800;">{{ eventAddressFull }}</div>
+            </div>
+            <div style="border: 4px solid #17130F; background: #F2B22E; color: #17130F; padding: 14px 18px; box-shadow: 5px 5px 0 #17130F;">
+              <div style="font-size: 11px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase;">Sua parte</div>
+              <div style="font-family: Bangers, cursive; font-size: 38px; line-height: 1;">{{ perAdult }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: clamp(16px, 2.4vw, 26px); align-items: start;">
+          <div style="border: 4px solid #17130F; background: #FFF8EA; box-shadow: 8px 8px 0 #17130F; padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+            <div style="font-family: Bangers, cursive; font-size: 28px; letter-spacing: 1px;">O que vai ter</div>
+            <sc-for list="{{ groups }}" as="g" hint-placeholder-count="4">
+              <div>
+                <div style="font-size: 12px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #C2341F;">{{ g.name }}</div>
+                <div style="font-weight: 700; color: #4A3E31;">{{ g.summary }}</div>
+              </div>
+            </sc-for>
+            <div style="border: 3px solid #17130F; background: #F2B22E; padding: 12px; font-weight: 800; font-size: 14px;">{{ alcoholNote }}</div>
+            <div style="display: flex; justify-content: space-between; border-top: 3px solid #17130F; padding-top: 12px; font-family: Bangers, cursive; font-size: 26px;"><span>Total</span><span>{{ total }}</span></div>
+          </div>
+
+          <div style="border: 4px solid #17130F; background: #2C5FA8; color: #FFF8EA; box-shadow: 8px 8px 0 #17130F; padding: 20px; display: flex; flex-direction: column; gap: 14px; align-items: center; text-align: center;">
+            <div style="font-family: Bangers, cursive; font-size: 28px; letter-spacing: 1px;">Pague sua parte no Pix</div>
+            <div style="width: 100%; max-width: 210px; background: #FFF8EA; border: 4px solid #FFF8EA; padding: 8px;">{{ qr }}</div>
+            <div style="width: 100%; border: 3px solid #FFF8EA; background: #FFF8EA22; padding: 12px; font-family: ui-monospace, monospace; font-size: 13px; word-break: break-all;">{{ pixDisplay }}</div>
+            <button onClick="{{ copyPix }}" style="width: 100%; border: 3px solid #17130F; background: #F2B22E; color: #17130F; font-weight: 900; padding: 13px; cursor: pointer; box-shadow: 4px 4px 0 #17130F;" style-hover="background: #FFF8EA;">{{ copyPixLabel }}</button>
+            <div style="font-weight: 700; font-size: 13px; opacity: 0.85;">Organizado por {{ hostName }}</div>
+          </div>
+
+          <div style="border: 4px solid #17130F; background: #FFF8EA; box-shadow: 8px 8px 0 #17130F; padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+            <div style="font-family: Bangers, cursive; font-size: 28px; letter-spacing: 1px;">Você vai?</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+              <sc-for list="{{ rsvpOptions }}" as="o" hint-placeholder-count="3">
+                <button onClick="{{ o.go }}" style="{{ o.style }}">{{ o.label }}</button>
+              </sc-for>
+            </div>
+            <div style="font-weight: 700; color: #4A3E31; font-size: 14px;">{{ rsvpNote }}</div>
+            <div style="height: 3px; background: #17130F1A;"></div>
+            <div style="font-size: 12px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #7A6A55;">Confirmados</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+              <sc-for list="{{ confirmed }}" as="c" hint-placeholder-count="4">
+                <div style="border: 3px solid #17130F; background: #F2E6D0; padding: 7px 12px; border-radius: 999px; font-weight: 800; font-size: 14px;">{{ c }}</div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <footer style="border-top: 3px solid #17130F33; padding-top: 16px; font-weight: 700; font-size: 13px; color: #7A6A55; display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between;">
+      <span>Protótipo de design · churrasqu.in</span>
+      <span>Preços de referência — ajuste conforme seu mercado.</span>
+    </footer>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;beerPerAdultL&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1.5,&quot;min&quot;:0.5,&quot;max&quot;:3,&quot;step&quot;:0.25,&quot;unit&quot;:&quot; L&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Regras de cálculo&quot;}}">
+const CATS = ['Carnes', 'Bebidas', 'Acompanhamentos', 'Essenciais'];
+const DOMAIN = 'churrasqu.in';
+
+const money = (v) => 'R$ ' + (v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const kg = (v) => (v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' kg';
+const upKg = (v) => Math.max(0.5, Math.round(v * 2) / 2);
+const upUn = (v) => Math.max(1, Math.ceil(v));
+
+const TIERS = {
+  basico: {
+    name: 'Básico',
+    badge: 'churras básico', price: '$',
+    pitch: 'O churras honesto: linguiça, frango e um corte bovino que rende.',
+    cuts: [
+      { n: 'Linguiça toscana', p: 0.32, price: 26 },
+      { n: 'Coxa e sobrecoxa de frango', p: 0.28, price: 19 },
+      { n: 'Fraldinha', p: 0.4, price: 49 }
+    ],
+    charcoal: { n: 'Carvão vegetal 5kg', price: 29 },
+    sides: [
+      { n: 'Pão de alho (unidade)', u: 'un', price: 4.5, per: 'guest', f: 1 },
+      { n: 'Farofa pronta 500g', u: 'un', price: 12, per: 'guest', f: 1 / 6 },
+      { n: 'Kit vinagrete', u: 'kit', price: 18, per: 'guest', f: 1 / 8 }
+    ],
+    optional: [
+      { n: 'Molho barbecue', u: 'un', price: 16, q: 1 },
+      { n: 'Sobremesa simples (bolo/pudim)', u: 'un', price: 32, q: 1 },
+      { n: 'Pão francês', u: 'kg', price: 18, q: 1 }
+    ]
+  },
+  medio: {
+    name: 'Médio',
+    badge: 'caiu o VR', price: '$$',
+    pitch: 'Picanha na mesa, costela no tempo certo e acompanhamento de gente grande.',
+    cuts: [
+      { n: 'Picanha', p: 0.34, price: 89 },
+      { n: 'Costela bovina', p: 0.24, price: 52 },
+      { n: 'Linguiça artesanal', p: 0.2, price: 39 },
+      { n: 'Asinha de frango temperada', p: 0.22, price: 28 }
+    ],
+    charcoal: { n: 'Carvão de eucalipto 5kg', price: 39 },
+    sides: [
+      { n: 'Pão de alho artesanal', u: 'un', price: 7, per: 'guest', f: 1 },
+      { n: 'Queijo coalho no espeto', u: 'un', price: 9.5, per: 'adult', f: 1 },
+      { n: 'Farofa da casa 500g', u: 'un', price: 19, per: 'guest', f: 1 / 6 },
+      { n: 'Maionese verde caseira', u: 'kg', price: 34, per: 'guest', f: 1 / 8 }
+    ],
+    optional: [
+      { n: 'Batata rústica assada', u: 'kg', price: 22, q: 2 },
+      { n: 'Tábua de frios', u: 'un', price: 89, q: 1 },
+      { n: 'Chimichurri artesanal', u: 'un', price: 26, q: 1 }
+    ]
+  },
+  gourmet: {
+    name: 'Gourmet',
+    badge: 'faria limer', price: '$$$',
+    pitch: 'Cortes maturados, frutos do mar e harmonização. Churras de fechar o ano.',
+    cuts: [
+      { n: 'Picanha maturada', p: 0.28, price: 139 },
+      { n: 'Tomahawk', p: 0.24, price: 169 },
+      { n: 'Ancho Angus', p: 0.2, price: 129 },
+      { n: 'Salmão em posta', p: 0.16, price: 99 },
+      { n: 'Camarão VG', p: 0.12, price: 159 }
+    ],
+    charcoal: { n: 'Carvão de coco premium 5kg', price: 69 },
+    sides: [
+      { n: 'Provolone à parmegiana', u: 'un', price: 26, per: 'adult', f: 0.5 },
+      { n: 'Pão de alho trufado', u: 'un', price: 14, per: 'guest', f: 1 },
+      { n: 'Farofa de bacon e castanha', u: 'un', price: 34, per: 'guest', f: 1 / 6 },
+      { n: 'Vinagrete de manga com hortelã', u: 'kit', price: 39, per: 'guest', f: 1 / 8 },
+      { n: 'Legumes grelhados na brasa', u: 'kg', price: 42, per: 'guest', f: 1 / 6 }
+    ],
+    optional: [
+      { n: 'Ostras frescas (dúzia)', u: 'dz', price: 120, q: 1 },
+      { n: 'Tábua de queijos de terroir', u: 'un', price: 189, q: 1 },
+      { n: 'Sobremesa de confeitaria', u: 'un', price: 96, q: 1 }
+    ]
+  }
+};
+
+const LOCALS = [
+  { id: 'casa', label: 'Casa / Quintal', extra: null },
+  { id: 'chacara', label: 'Chácara', extra: { n: 'Lenha para churrasqueira', u: 'saco', price: 45, q: 1 } },
+  { id: 'praia', label: 'Praia / Parque', extra: { n: 'Cooler térmico 34L + gelo extra', u: 'un', price: 149, q: 1 } },
+  { id: 'salao', label: 'Salão de festas', extra: { n: 'Descartáveis e utensílios extra', u: 'kit', price: 48, q: 1 } }
+];
+
+const DURATIONS = [
+  { id: 4, label: 'Até 4h' },
+  { id: 6, label: 'Entre 4h e 6h' },
+  { id: 8, label: 'Mais de 6h' }
+];
+
+const PIX_TYPES = ['Celular', 'CPF', 'E-mail', 'Aleatória'];
+const PIX_PH = { 'Celular': '(11) 98888-1234', 'CPF': '123.456.789-00', 'E-mail': 'ze@email.com', 'Aleatória': '0f7a2c1e-9b44-4d21-8f0e-11aa22bb33cc' };
+
+class Component extends DCLogic {
+  state = {
+    screen: 'setup',
+    men: 6, women: 5, kids: 3,
+    eventDay: '2026-09-19', startTime: '12:30', endTime: '19:00',
+    alcoholMode: 'lista', barSpend: '60',
+    eventCity: 'Vila Brasa, São Paulo', eventHint: 'Portão azul, quintal do fundo',
+    tier: 'medio',
+    edits: {},
+    authTab: 'signup',
+    prices: {},
+    form: { name: '', email: '', password: '' },
+    loggedIn: false,
+    userName: '',
+    eventName: 'Churras da Laje',
+    eventDate: 'Sábado, 19/09 · 12h30',
+    eventAddress: 'Rua das Brasas, 120 — quintal do fundo',
+    pixType: 'Celular',
+    pixKey: '(11) 98888-1234',
+    copied: false,
+    copiedPix: false,
+    rsvp: null
+  };
+
+  set = (patch) => this.setState(patch);
+
+  hours() {
+    const m = (t) => { const p = String(t || '').split(':'); return (+p[0] || 0) * 60 + (+p[1] || 0); };
+    let d = (m(this.state.endTime) - m(this.state.startTime)) / 60;
+    if (d <= 0) d += 24;
+    return Math.min(14, Math.max(1, d));
+  }
+
+  dayLabel() {
+    const p = String(this.state.eventDay || '').split('-');
+    if (p.length !== 3) return 'Data a definir';
+    const dt = new Date(+p[0], +p[1] - 1, +p[2]);
+    if (isNaN(dt)) return 'Data a definir';
+    const dias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+    return dias[dt.getDay()] + ', ' + p[2] + '/' + p[1];
+  }
+
+  fullAddress() {
+    const s = this.state;
+    return [s.eventAddress, s.eventCity, s.eventHint].filter(Boolean).join(' — ');
+  }
+
+  ctx() {
+    const s = this.state;
+    const adults = s.men + s.women;
+    const guests = adults + s.kids;
+    const hours = this.hours();
+    const stretch = hours >= 7 ? 1.25 : hours >= 5 ? 1.12 : 1;
+    const beerL = this.props.beerPerAdultL ?? 1.5;
+    return { s, adults, guests, stretch, beerL, meat: (s.men * 0.42 + s.women * 0.32 + s.kids * 0.2) * stretch };
+  }
+
+  base(tierId) {
+    const t = TIERS[tierId];
+    const { s, adults, guests, stretch, beerL, meat } = this.ctx();
+    const meatTotal = meat * (tierId === 'gourmet' ? 1.05 : 1);
+    const out = [];
+    const push = (o) => out.push(Object.assign({ id: tierId + '-' + out.length, on: true, u: 'un' }, o));
+
+    t.cuts.forEach((c) => push({ name: c.n, cat: 'Carnes', u: 'kg', price: c.price, q: upKg(meatTotal * c.p) }));
+
+    if (s.alcoholMode === 'lista') {
+      if (tierId === 'basico') push({ name: 'Cerveja lata 350ml', cat: 'Bebidas', price: 4.2, q: upUn(adults * beerL / 0.35) });
+      if (tierId === 'medio') {
+        push({ name: 'Cerveja long neck 355ml', cat: 'Bebidas', price: 6.9, q: upUn(adults * beerL / 0.355) });
+        push({ name: 'Kit caipirinha (cachaça, limão, açúcar)', cat: 'Bebidas', u: 'kit', price: 78, q: upUn(adults / 10) });
+      }
+      if (tierId === 'gourmet') {
+        push({ name: 'Cerveja artesanal IPA 600ml', cat: 'Bebidas', price: 34, q: upUn(adults * beerL / 0.6) });
+        push({ name: 'Vinho Malbec (garrafa)', cat: 'Bebidas', price: 119, q: upUn(adults / 6) });
+        push({ name: 'Espumante brut (garrafa)', cat: 'Bebidas', price: 89, q: upUn(adults / 10) });
+      }
+    } else {
+      push({ name: 'Suco natural concentrado 1L', cat: 'Bebidas', price: 19, q: upUn(guests / 4) });
+    }
+    push({ name: 'Refrigerante 2L', cat: 'Bebidas', price: tierId === 'gourmet' ? 14 : 11.5, q: upUn(guests * 0.55 / 2) });
+    push({ name: tierId === 'gourmet' ? 'Água com gás 500ml' : 'Água mineral 1,5L', cat: 'Bebidas', price: tierId === 'gourmet' ? 8.5 : 4.5, q: upUn(tierId === 'gourmet' ? guests : guests * 0.6 / 1.5) });
+    push({ name: tierId === 'gourmet' ? 'Gelo filtrado em cubo 5kg' : 'Gelo 5kg', cat: 'Bebidas', u: 'saco', price: tierId === 'gourmet' ? 22 : 14, q: upUn(guests / 6 * stretch) });
+
+    t.sides.forEach((sd) => {
+      const bucket = sd.per === 'adult' ? adults : guests;
+      push({ name: sd.n, cat: 'Acompanhamentos', u: sd.u, price: sd.price, q: sd.u === 'kg' ? upKg(bucket * sd.f) : upUn(bucket * sd.f) });
+    });
+
+    push({ name: t.charcoal.n, cat: 'Essenciais', u: 'saco', price: t.charcoal.price, q: upUn(meatTotal / 5) });
+    push({ name: 'Sal grosso 1kg', cat: 'Essenciais', price: 9.5, q: upUn(meatTotal / 8) });
+    push({ name: 'Kit descartáveis (pratos, copos, guardanapos)', cat: 'Essenciais', u: 'kit', price: 38, q: upUn(guests / 10) });
+    push({ name: 'Acendedor e papel alumínio', cat: 'Essenciais', u: 'kit', price: 24, q: 1 });
+
+    if (this.hours() >= 7) push({ name: 'Gelo extra e reposição de carvão', cat: 'Essenciais', u: 'kit', price: 42, q: 1 });
+
+    t.optional.forEach((o) => push({ name: o.n, cat: 'Acompanhamentos', u: o.u, price: o.price, q: o.q, on: false }));
+    return out;
+  }
+
+  resolved(tierId) {
+    const { edits, prices } = this.state;
+    return this.base(tierId).map((raw) => {
+      const i = prices[raw.id] !== undefined ? Object.assign({}, raw, { price: prices[raw.id] }) : raw;
+      const e = edits[i.id];
+      if (e === null) return Object.assign({}, i, { on: false });
+      if (e !== undefined) return Object.assign({}, i, { q: e, on: true });
+      return i;
+    });
+  }
+
+  tierTotal(tierId) {
+    return this.resolved(tierId).filter((i) => i.on).reduce((a, i) => a + i.q * i.price, 0);
+  }
+
+  step(u) { return u === 'kg' ? 0.5 : 1; }
+
+  chip(active, activeBg) {
+    return 'border: 3px solid #17130F; padding: 11px 16px; font-weight: 800; cursor: pointer; border-radius: 999px; box-shadow: 3px 3px 0 #17130F; background: ' +
+      (active ? (activeBg || '#C2341F') + '; color: #FFF8EA;' : '#FFF8EA; color: #17130F;');
+  }
+
+  qr(seed) {
+    const N = 25;
+    let h = 2166136261;
+    for (let i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619); }
+    const rnd = () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 1000) / 1000; };
+    const inFinder = (x, y) => {
+      const f = (ox, oy) => x >= ox && x < ox + 7 && y >= oy && y < oy + 7;
+      return f(0, 0) || f(N - 7, 0) || f(0, N - 7);
+    };
+    const finderOn = (x, y) => {
+      const lx = x < 7 ? x : x - (N - 7), ly = y < 7 ? y : y - (N - 7);
+      const d = Math.max(Math.abs(lx - 3), Math.abs(ly - 3));
+      return d === 3 || d <= 1;
+    };
+    const cells = [];
+    for (let y = 0; y < N; y++) {
+      for (let x = 0; x < N; x++) {
+        const on = inFinder(x, y) ? finderOn(x, y) : rnd() > 0.48;
+        cells.push(React.createElement('div', { key: x + '-' + y, style: { background: on ? '#17130F' : 'transparent' } }));
+      }
+    }
+    return React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(' + N + ', 1fr)', aspectRatio: '1 / 1', width: '100%' } }, cells);
+  }
+
+  renderVals() {
+    const s = this.state;
+    const { adults, guests, meat } = this.ctx();
+    const scr = s.screen;
+    const all = this.resolved(s.tier);
+    const items = all.filter((i) => i.on);
+    const total = items.reduce((a, i) => a + i.q * i.price, 0);
+    const perAdult = adults ? total / adults : 0;
+    const slug = (s.eventName || 'churras').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const shareLink = DOMAIN + '/c/' + (slug || 'churras') + '-8f2a';
+
+    const stepDefs = [
+      { id: 'setup', label: '1 · Convidados' },
+      { id: 'tiers', label: '2 · Nível' },
+      { id: 'edit', label: '3 · Lista' },
+      { id: s.loggedIn ? 'share' : 'auth', label: '4 · Compartilhar' }
+    ];
+    const order = ['setup', 'tiers', 'edit', 'auth', 'share', 'public'];
+    const curIdx = order.indexOf(scr);
+
+    const groups = CATS.map((c) => {
+      const list = items.filter((i) => i.cat === c);
+      const sub = list.reduce((a, i) => a + i.q * i.price, 0);
+      return {
+        name: c,
+        subtotal: money(sub),
+        summary: list.map((i) => i.name).join(' · ') || 'nada por aqui',
+        items: list.map((i) => ({
+          name: i.name,
+          unitLabel: i.u === 'kg' ? 'por kg' : 'por ' + i.u,
+          priceText: i.price.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+          setPrice: (e) => {
+            const v = parseFloat(String(e.target.value).replace(/\./g, '').replace(',', '.'));
+            if (!isNaN(v) && v >= 0) this.setState({ prices: Object.assign({}, this.state.prices, { [i.id]: v }) });
+          },
+          qtyText: i.u === 'kg' ? i.q.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : String(i.q),
+          total: money(i.q * i.price),
+          inc: () => this.setState({ edits: Object.assign({}, this.state.edits, { [i.id]: Math.round((i.q + this.step(i.u)) * 10) / 10 }) }),
+          dec: () => this.setState({ edits: Object.assign({}, this.state.edits, { [i.id]: Math.max(this.step(i.u), Math.round((i.q - this.step(i.u)) * 10) / 10) }) }),
+          set: (e) => {
+            const v = parseFloat(String(e.target.value).replace(',', '.'));
+            if (!isNaN(v) && v > 0) this.setState({ edits: Object.assign({}, this.state.edits, { [i.id]: v }) });
+          },
+          remove: () => this.setState({ edits: Object.assign({}, this.state.edits, { [i.id]: null }) })
+        }))
+      };
+    }).filter((g) => g.items.length);
+
+    const authFields = (s.authTab === 'signup'
+      ? [{ k: 'name', label: 'Seu nome', type: 'text', ph: 'Zé do Churrasco' }, { k: 'email', label: 'E-mail', type: 'email', ph: 'ze@email.com' }, { k: 'password', label: 'Senha', type: 'password', ph: 'mínimo 8 caracteres' }]
+      : [{ k: 'email', label: 'E-mail', type: 'email', ph: 'ze@email.com' }, { k: 'password', label: 'Senha', type: 'password', ph: '••••••••' }]
+    ).map((f) => ({
+      label: f.label, type: f.type, placeholder: f.ph, value: s.form[f.k],
+      set: (e) => this.setState({ form: Object.assign({}, this.state.form, { [f.k]: e.target.value }) })
+    }));
+
+    return {
+      loggedIn: s.loggedIn,
+      userName: s.userName || 'Você',
+      userInitial: (s.userName || 'V').charAt(0).toUpperCase(),
+      isSetup: scr === 'setup', isTiers: scr === 'tiers', isEdit: scr === 'edit',
+      isAuth: scr === 'auth', isShare: scr === 'share', isPublic: scr === 'public',
+      steps: stepDefs.map((st) => ({
+        label: st.label,
+        style: 'border: 3px solid #17130F; padding: 9px 15px; font-weight: 900; font-size: 13px; cursor: pointer; border-radius: 999px; box-shadow: 3px 3px 0 #17130F; background: ' +
+          (order.indexOf(st.id) === curIdx ? '#17130F; color: #FFF8EA;' : order.indexOf(st.id) < curIdx ? '#F2B22E; color: #17130F;' : '#FFF8EA; color: #8A7A66;'),
+        go: () => { if (order.indexOf(st.id) <= Math.max(curIdx, 2)) this.set({ screen: st.id }); }
+      })),
+      people: [
+        { label: 'Homens', value: s.men, hint: '~420 g de carne', inc: () => this.set({ men: s.men + 1 }), dec: () => this.set({ men: Math.max(0, s.men - 1) }) },
+        { label: 'Mulheres', value: s.women, hint: '~320 g de carne', inc: () => this.set({ women: s.women + 1 }), dec: () => this.set({ women: Math.max(0, s.women - 1) }) },
+        { label: 'Crianças', value: s.kids, hint: '~200 g de carne', inc: () => this.set({ kids: s.kids + 1 }), dec: () => this.set({ kids: Math.max(0, s.kids - 1) }) }
+      ],
+      eventDay: s.eventDay, startTime: s.startTime, endTime: s.endTime,
+      eventCity: s.eventCity, eventHint: s.eventHint,
+      setEventDay: (e) => this.set({ eventDay: e.target.value }),
+      setStartTime: (e) => this.set({ startTime: e.target.value }),
+      setEndTime: (e) => this.set({ endTime: e.target.value }),
+      setEventCity: (e) => this.set({ eventCity: e.target.value }),
+      setEventHint: (e) => this.set({ eventHint: e.target.value }),
+      alcoholModes: [
+        { id: 'lista', label: 'Entra no rateio', hint: 'Cerveja e afins na lista de compras' },
+        { id: 'byob', label: 'Cada um leva a sua', hint: 'Fora do rateio — só gelo e cooler' },
+        { id: 'bar', label: 'Compra no bar do local', hint: 'Consumação paga individualmente' },
+        { id: 'none', label: 'Sem álcool', hint: 'Só sucos e refrigerante' }
+      ].map((m) => ({
+        label: m.label, hint: m.hint,
+        style: 'text-align: left; display: grid; gap: 3px; border: 3px solid #17130F; padding: 12px 14px; cursor: pointer; box-shadow: 4px 4px 0 #17130F; background: ' +
+          (s.alcoholMode === m.id ? '#2C5FA8; color: #FFF8EA;' : '#FFF8EA; color: #17130F;'),
+        go: () => this.set({ alcoholMode: m.id })
+      })),
+      isBarMode: s.alcoholMode === 'bar',
+      barSpend: s.barSpend,
+      setBarSpend: (e) => this.set({ barSpend: e.target.value }),
+      alcoholNote: s.alcoholMode === 'lista' ? 'A bebida está no rateio — já está no valor por adulto.'
+        : s.alcoholMode === 'byob' ? 'Traga sua própria bebida: o rateio cobre carne, acompanhamentos e gelo.'
+        : s.alcoholMode === 'bar' ? 'Bebida no bar do local, consumação individual (~' + money(parseFloat(String(s.barSpend).replace(',', '.')) || 0) + ' por adulto).'
+        : 'Churras sem álcool — tem suco e refrigerante à vontade.',
+      guests,
+      meatLabel: kg(meat),
+      meatChosen: kg(items.filter((i) => i.cat === 'Carnes' && i.u === 'kg').reduce((a, i) => a + i.q, 0)),
+      localLabel: s.eventCity || s.eventAddress || 'A definir',
+      durationLabel: s.startTime + '–' + s.endTime + ' (' + this.hours().toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + 'h)',
+      tierName: TIERS[s.tier].name,
+      tierCards: Object.keys(TIERS).map((id) => {
+        const t = TIERS[id], tt = this.tierTotal(id), active = s.tier === id;
+        return {
+          name: t.name, badge: t.badge, price: t.price, pitch: t.pitch,
+          total: money(tt), perAdult: money(adults ? tt / adults : 0),
+          highlights: t.cuts.map((c) => c.n).concat([t.sides.length + ' acompanhamentos', t.charcoal.n]),
+          cardStyle: 'display: flex; flex-direction: column; gap: 14px; border: 4px solid #17130F; padding: 20px; box-shadow: 10px 10px 0 #17130F; background: ' + (active ? '#F2B22E' : '#FFF8EA') + ';',
+          badgeStyle: 'flex: none; border: 3px solid #17130F; background: ' + (active ? '#17130F' : '#C2341F') + '; color: #FFF8EA; font-weight: 900; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 10px;',
+          btnLabel: active ? 'Editar esta lista →' : 'Escolher ' + t.name,
+          btnStyle: 'border: 3px solid #17130F; background: ' + (active ? '#C2341F' : '#FFF8EA') + '; color: ' + (active ? '#FFF8EA' : '#17130F') + '; font-family: Bangers, cursive; font-size: 22px; letter-spacing: 1px; padding: 12px; cursor: pointer; box-shadow: 5px 5px 0 #17130F;',
+          choose: () => this.set({ tier: id, screen: 'edit' })
+        };
+      }),
+      groups,
+      suggestions: all.filter((i) => !i.on).map((i) => ({
+        label: i.name + ' · ' + money(i.price),
+        add: () => this.setState({ edits: Object.assign({}, this.state.edits, { [i.id]: i.q }) })
+      })),
+      resetItems: () => this.set({ edits: {}, prices: {} }),
+      total: money(total),
+      perAdult: money(perAdult),
+      itemCount: items.length,
+      goSetup: () => this.set({ screen: 'setup' }),
+      goTiers: () => this.set({ screen: 'tiers' }),
+      goEdit: () => this.set({ screen: 'edit' }),
+      goShare: () => this.set({ screen: s.loggedIn ? 'share' : 'auth' }),
+      goPublic: () => this.set({ screen: 'public' }),
+      restart: () => this.set({ screen: 'setup', edits: {}, prices: {}, tier: 'medio', rsvp: null }),
+      authTitle: s.authTab === 'signup' ? 'Crie sua conta' : 'Bem-vindo de volta',
+      authCta: s.authTab === 'signup' ? 'Criar conta e salvar' : 'Entrar e salvar',
+      authTabs: [
+        { id: 'signup', label: 'Criar conta' },
+        { id: 'login', label: 'Já tenho conta' }
+      ].map((t) => ({
+        label: t.label,
+        style: 'border: none; padding: 12px 18px; font-weight: 900; cursor: pointer; background: ' + (s.authTab === t.id ? '#17130F; color: #FFF8EA;' : '#FFF8EA; color: #17130F;'),
+        go: () => this.set({ authTab: t.id })
+      })),
+      authFields,
+      submitAuth: () => this.set({ loggedIn: true, userName: (s.form.name || s.form.email || 'Você').split('@')[0], screen: 'share' }),
+      perks: [
+        'Salvar quantos churras quiser e reaproveitar as listas',
+        'Gerar link público em ' + DOMAIN + '/c/… pra mandar no grupo',
+        'QR Code com chave Pix e valor por pessoa',
+        'Ver quem confirmou e quem já pagou a parte'
+      ],
+      eventName: s.eventName,
+      eventDate: this.dayLabel() + ' · começa ' + s.startTime + ' · até ' + s.endTime,
+      eventAddress: s.eventAddress,
+      eventAddressFull: this.fullAddress(),
+      setEventName: (e) => this.set({ eventName: e.target.value }),
+      setEventAddress: (e) => this.set({ eventAddress: e.target.value }),
+      shareLink,
+      copyLabel: s.copied ? 'Copiado!' : 'Copiar link',
+      copyLink: () => { this.set({ copied: true }); setTimeout(() => this.set({ copied: false }), 1600); },
+      pixTypes: PIX_TYPES.map((p) => ({ label: p, style: this.chip(s.pixType === p, '#2C5FA8'), go: () => this.set({ pixType: p, pixKey: PIX_PH[p] }) })),
+      pixKey: s.pixKey,
+      pixPlaceholder: PIX_PH[s.pixType],
+      pixDisplay: s.pixType + ' · ' + (s.pixKey || PIX_PH[s.pixType]),
+      setPixKey: (e) => this.set({ pixKey: e.target.value }),
+      copyPixLabel: s.copiedPix ? 'Chave copiada!' : 'Copiar chave Pix',
+      copyPix: () => { this.set({ copiedPix: true }); setTimeout(() => this.set({ copiedPix: false }), 1600); },
+      qr: this.qr(shareLink + '|' + s.pixKey),
+      hostName: s.userName || 'Você',
+      rsvpOptions: ['Vou!', 'Vou levar alguém', 'Não vou'].map((o) => ({ label: o, style: this.chip(s.rsvp === o), go: () => this.set({ rsvp: o }) })),
+      rsvpNote: s.rsvp === 'Vou!' ? 'Boa! Já entrou na conta da carne.'
+        : s.rsvp === 'Vou levar alguém' ? 'Beleza — avisa quantos pra recalcular a lista.'
+        : s.rsvp === 'Não vou' ? 'Que pena. Fica pro próximo!'
+        : 'Confirma pra o anfitrião ajustar as quantidades.',
+      confirmed: ['Ana', 'Bruno', 'Carla', 'Diego +1', 'Fê', 'Gui'],
+      noop: () => {}
+    };
+  }
+}
+</script>
+</body>
+</html>
