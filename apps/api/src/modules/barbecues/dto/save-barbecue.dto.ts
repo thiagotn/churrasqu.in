@@ -1,4 +1,5 @@
-import { IsOptional, IsString, Length, Matches } from 'class-validator';
+import { IsIn, IsOptional, IsString, Length, Matches } from 'class-validator';
+import { PIX_KEY_TYPES, PixKeyType } from '../../sharing/pix';
 import { EstimateRequestDto } from './estimate.dto';
 
 export class SaveBarbecueDto extends EstimateRequestDto {
@@ -21,4 +22,13 @@ export class SaveBarbecueDto extends EstimateRequestDto {
   @IsString()
   @Length(0, 160)
   eventHint?: string;
+
+  @IsOptional()
+  @IsIn(PIX_KEY_TYPES)
+  pixType?: PixKeyType;
+
+  @IsOptional()
+  @IsString()
+  @Length(0, 120)
+  pixKey?: string;
 }

@@ -2,6 +2,8 @@ import { AlcoholMode, TierId } from '@churrasquin/calculator';
 
 export type Screen = 'setup' | 'tiers' | 'edit' | 'auth' | 'saved';
 
+export type PixType = 'Celular' | 'CPF' | 'E-mail' | 'Aleatória';
+
 export interface ChurrasState {
   screen: Screen;
   /** Maior etapa já alcançada (1–4) — o stepper só navega para trás/até aqui */
@@ -25,6 +27,8 @@ export interface ChurrasState {
   userName: string;
   savedId: string | null;
   savedSlug: string | null;
+  pixType: PixType;
+  pixKey: string;
 }
 
 export const initialState: ChurrasState = {
@@ -49,6 +53,8 @@ export const initialState: ChurrasState = {
   userName: '',
   savedId: null,
   savedSlug: null,
+  pixType: 'Celular',
+  pixKey: '(11) 98888-1234',
 };
 
 export const STEP_OF_SCREEN: Record<Screen, number> = {

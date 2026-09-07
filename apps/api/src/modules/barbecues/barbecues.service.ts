@@ -3,6 +3,7 @@ import { makeShareSlug } from '@churrasquin/calculator';
 import { Barbecue, BarbecueItem } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CalculatorService } from '../calculator/calculator.service';
+import { normalizePixKey } from '../sharing/pix';
 import { SaveBarbecueDto } from './dto/save-barbecue.dto';
 
 const toCents = (v: number): number => Math.round(v * 100);
@@ -22,7 +23,11 @@ export class BarbecuesService {
     if (dto.men + dto.women < 1) {
       throw new BadRequestException('O churras precisa de pelo menos 1 adulto.');
     }
-    const { adjustments, eventName, eventDay, eventAddress, eventCity, eventHint, ...input } = dto;
+    const { adjustments, eventName, eventDay, eventAddress, eventCity, eventHint, pixType, pixKey, ...input } =
+      dto;
+    if (pixType && pixKey && normalizePixKey(pixType, pixKey) === null) {
+      throw new BadRequestException(`Chave Pix inválida para o tipo ${pixType}.`);
+    }
     const result = this.calculator.estimate(input, adjustments);
     return {
       totals: {
@@ -46,6 +51,8 @@ export class BarbecuesService {
         eventAddress,
         eventCity,
         eventHint: eventHint ?? '',
+        pixType: pixType ?? null,
+        pixKey: pixKey ?? null,
         startTime: input.startTime,
         endTime: input.endTime,
         alcoholMode: input.alcoholMode,

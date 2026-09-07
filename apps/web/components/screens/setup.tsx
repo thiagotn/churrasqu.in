@@ -2,6 +2,7 @@
 
 import { AlcoholMode, CalculationResult } from '@churrasquin/calculator';
 import { hoursLabel, kgLabel } from '../../lib/format';
+import { ALCOHOL_NOTE } from '../../lib/labels';
 import { Action, ChurrasState } from '../../lib/state';
 import { FieldLabel, inputCls, press } from '../ui';
 
@@ -11,13 +12,6 @@ const ALCOHOL_OPTIONS: { id: AlcoholMode; title: string; hint: string }[] = [
   { id: 'bar', title: 'Compra no bar do local', hint: 'Consumação paga individualmente' },
   { id: 'none', title: 'Sem álcool', hint: 'Só sucos e refrigerante' },
 ];
-
-const ALCOHOL_NOTE: Record<AlcoholMode, string> = {
-  lista: 'Bebida alcoólica entra na lista e no rateio de todo mundo.',
-  byob: 'Cada um leva a sua bebida — a lista cobre só gelo, refri e água.',
-  bar: 'Consumação no bar é paga individualmente e fica fora do rateio.',
-  none: 'Churras sem álcool: sucos e refrigerante na conta.',
-};
 
 function PersonStepper({
   title,
