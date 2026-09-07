@@ -1,44 +1,44 @@
 # Go-live — dependências pendentes (checklist de referência)
 
-> Atualizado em 2026-09-08. Estado no momento: código publicado em `github.com/thiagotn/churrasqu.in`;
-> CI verde até as imagens (GHCR); o job `bump-homelab-tag` falhou por falta do secret (passo A);
-> o commit do homelab com os manifests (`e97a1c9`, ADR 0008) ainda é **só local**.
-> Marque os itens conforme for resolvendo e atualize esta nota.
+> Atualizado em 2026-09-08 (2ª revisão). **A–D concluídos**: deploy key + secret configurados, packages
+> GHCR públicos (pull anônimo verificado), homelab pushado e o write-back do CI já gravou
+> `sha-8436349…` no kustomization (`deploy(churrasquin): … [skip ci]`). Faltam **E, F e G** (Cloudflare,
+> secrets/Application no cluster e a virada de DNS). Marque os itens conforme for resolvendo.
 
 ## A. CI write-back (GitHub)
 
-- [ ] **Gerar par de chaves SSH** para o CI escrever no homelab:
+- [x] **Gerar par de chaves SSH** para o CI escrever no homelab:
   ```bash
   ssh-keygen -t ed25519 -f /tmp/churrasquin-ci -N "" -C "churrasquin-ci-writeback"
   ```
-- [ ] **Chave pública** em `homelab` → *Settings → Deploy keys → Add deploy key* — cole
+- [x] **Chave pública** em `homelab` → *Settings → Deploy keys → Add deploy key* — cole
   `/tmp/churrasquin-ci.pub` e **marque "Allow write access"**.
-- [ ] **Chave privada** como secret do repo do app:
+- [x] **Chave privada** como secret do repo do app:
   ```bash
   gh secret set HOMELAB_DEPLOY_KEY --repo thiagotn/churrasqu.in < /tmp/churrasquin-ci
   ```
-- [ ] **Apagar as cópias locais**: `rm /tmp/churrasquin-ci /tmp/churrasquin-ci.pub`
+- [x] **Apagar as cópias locais**: `rm /tmp/churrasquin-ci /tmp/churrasquin-ci.pub`
 
 ## B. Packages GHCR públicos
 
 O primeiro push criou `churrasquin-api` e `churrasquin-web` como **privados**; a ADR 0008 assume
 públicos (o cluster não tem `imagePullSecret`).
 
-- [ ] `github.com/users/thiagotn/packages/container/churrasquin-api/settings` → *Change visibility* → **Public**
-- [ ] Idem para `churrasquin-web`
+- [x] `github.com/users/thiagotn/packages/container/churrasquin-api/settings` → *Change visibility* → **Public**
+- [x] Idem para `churrasquin-web`
 
 ## C. Push do homelab
 
 ⚠️ Push no homelab **é deploy** (Argo com selfHeal). Neste caso é seguro: as regras novas do túnel são
 inertes sem DNS e o app só entra no cluster no passo F.6.
 
-- [ ] `cd ../homelab && git push` (leva o commit `e97a1c9` — manifests + ADR 0008)
+- [x] `cd ../homelab && git push` (leva o commit `e97a1c9` — manifests + ADR 0008)
 
 ## D. Fechar o ciclo do CI
 
-- [ ] Re-rodar o write-back: `gh run rerun 34153758570 --failed --repo thiagotn/churrasqu.in`
+- [x] Re-rodar o write-back: `gh run rerun 34153758570 --failed --repo thiagotn/churrasqu.in`
   (ou qualquer push na main)
-- [ ] Conferir no homelab o commit `deploy(churrasquin): sha-…` e o `<sha>` no
+- [x] Conferir no homelab o commit `deploy(churrasquin): sha-…` e o `<sha>` no
   `helm/apps/churrasquin/kustomization.yaml` (substituindo o `latest` provisório)
 
 ## E. Cloudflare
