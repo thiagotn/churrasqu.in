@@ -1,6 +1,6 @@
 # Roadmap de fatias
 
-> Fatia atual: **6 — Docker + manifests k8s** (`WIP`)
+> Fatias 0–6: **todas `DONE`**. Próximas candidatas (a priorizar): painel "meus churras" + quem pagou; seed do catálogo no banco (adiado na fatia 3); CI de build/push das imagens.
 
 | # | Fatia | Status | Doc | Entrega |
 |---|---|---|---|---|
@@ -10,7 +10,7 @@
 | 3 | Auth (cadastro/login) + persistência | `DONE` | [slices/03-auth.md](./slices/03-auth.md) | JWT, users, banco + salvar churras |
 | 4 | Sharing: slug, link público, QR Code, Pix | `DONE` | [slices/04-sharing.md](./slices/04-sharing.md) | Telas 4–6, payload Pix EMV, página pública |
 | 5 | RSVP na página pública | `DONE` | [slices/05-rsvp.md](./slices/05-rsvp.md) | Confirmação de presença + lista de confirmados |
-| 6 | Docker + manifests k8s (homelab) | `WIP` | [slices/06-deploy-k8s.md](./slices/06-deploy-k8s.md) | Dockerfiles multi-stage, manifests, probes, migrations |
+| 6 | Docker + manifests k8s (homelab) | `DONE` | [slices/06-deploy-k8s.md](./slices/06-deploy-k8s.md) | Dockerfiles multi-stage, manifests, probes, migrations |
 
 ## Regras de atualização
 

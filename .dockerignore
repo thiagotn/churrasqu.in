@@ -1,0 +1,10 @@
+**/node_modules
+**/dist
+**/.next
+**/coverage
+.git
+docs
+design_handoff_churrasquin
+**/.env
+**/.env.local
+deploy

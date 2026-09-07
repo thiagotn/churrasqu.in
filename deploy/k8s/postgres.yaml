@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: churrasquin
+spec:
+  clusterIP: None
+  selector:
+    app: db
+  ports:
+    - port: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db
+  namespace: churrasquin
+spec:
+  serviceName: db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: churrasquin-secrets
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
+              subPath: pgdata
+          readinessProbe:
+            exec:
+              command: ['pg_isready', '-U', 'churrasquin']
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
+  volumeClaimTemplates:
+    - metadata:
+        name: pgdata
+      spec:
+        accessModes: ['ReadWriteOnce']
+        resources:
+          requests:
+            storage: 5Gi

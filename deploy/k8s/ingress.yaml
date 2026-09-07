@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: churrasquin
+  namespace: churrasquin
+  annotations:
+    # requer cert-manager com um ClusterIssuer 'letsencrypt' no cluster
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts: [churrasqu.in]
+      secretName: churrasquin-tls
+  rules:
+    - host: churrasqu.in
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: api
+                port:
+                  number: 3001
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 3000

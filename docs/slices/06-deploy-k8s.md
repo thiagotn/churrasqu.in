@@ -1,24 +1,46 @@
 # Fatia 6 — Docker + manifests k8s (homelab)
 
-**Status: TODO**
+**Status: DONE**
 
 ## Objetivo
 
 Deploy no cluster k8s do homelab conforme o handoff: um serviço por app, TLS em `churrasqu.in`.
 
-## Escopo previsto
-
-- Dockerfile multi-stage por app (api e web), builds a partir da raiz do monorepo (workspaces).
-- Manifests (ou Helm chart — decidir em ADR): Deployment + Service + Ingress (TLS), HPA, ConfigMap/Secret para env.
-- Probes em `/health` com `@nestjs/terminus` na api.
-- Migrations do banco como Job/initContainer.
-- Postgres: definir se roda no cluster (StatefulSet) ou fora — decidir com o dono do homelab.
-
 ## Checklist
 
-- [ ] Dockerfiles multi-stage (api, web) buildando localmente
-- [ ] `@nestjs/terminus` + `/health`
-- [ ] Manifests/chart com Ingress TLS, HPA, ConfigMap/Secret
-- [ ] Job/initContainer de migrations
-- [ ] Doc de deploy (como aplicar no cluster)
-- [ ] Roadmap atualizado + commit
+- [x] `apps/api/Dockerfile` multi-stage (build na raiz do monorepo; Prisma Client musl copiado; imagem roda como `node`) — **testado**: container serve `/api/health` (db up), catálogo e roda `prisma migrate deploy`
+- [x] `apps/web/Dockerfile` multi-stage com Next `output: standalone` (ARG `NEXT_PUBLIC_API_URL=/api`) — **testado**: container serve a home
+- [x] `/health` com `@nestjs/terminus` (ping no Postgres)
+- [x] Manifests em `deploy/k8s/` (kustomize): namespace, Postgres StatefulSet+PVC, api/web (Deployment + Service + HPA 2–4), Ingress TLS único — `kustomize build` validado — ver [ADR 0005](../decisions/0005-deploy-kustomize.md)
+- [x] Migrations como initContainer (`prisma migrate deploy`)
+- [x] `secret.example.yaml` + instruções (`kubectl create secret …`); secret real fora do git
+- [x] Roadmap atualizado + commit
+
+## Como fazer o deploy
+
+```bash
+# 1. build e push das imagens (troque o registry)
+docker build -f apps/api/Dockerfile -t registry.seu-homelab/churrasquin-api:v0.1.0 .
+docker build -f apps/web/Dockerfile -t registry.seu-homelab/churrasquin-web:v0.1.0 .
+docker push registry.seu-homelab/churrasquin-api:v0.1.0
+docker push registry.seu-homelab/churrasquin-web:v0.1.0
+
+# 2. aponte o kustomize para as suas tags
+cd deploy/k8s && kustomize edit set image \
+  churrasquin-api=registry.seu-homelab/churrasquin-api:v0.1.0 \
+  churrasquin-web=registry.seu-homelab/churrasquin-web:v0.1.0
+
+# 3. secret real (uma vez) — veja secret.example.yaml
+kubectl apply -f namespace.yaml
+kubectl -n churrasquin create secret generic churrasquin-secrets --from-literal=...
+
+# 4. aplica tudo
+kubectl apply -k deploy/k8s
+```
+
+Pré-requisitos no cluster: ingress-nginx, cert-manager com `ClusterIssuer` chamado `letsencrypt`, metrics-server (para os HPAs), DNS de `churrasqu.in` apontando para o Ingress.
+
+## Notas
+
+- O Postgres roda no cluster (StatefulSet 1 réplica). Backup do PVC é responsabilidade do homelab.
+- CI de build/push das imagens fica como melhoria futura (não há remoto git configurado ainda).
