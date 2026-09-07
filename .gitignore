@@ -1,7 +1,17 @@
+# dependências e builds
 node_modules/
 dist/
 .next/
 coverage/
 *.tsbuildinfo
+
+# ambiente e segredos (só *.example vai para o git)
 .env
 .env.local
+*.local
+
+# SO / editor / logs
+.DS_Store
+Thumbs.db
+npm-debug.log*
+*.log

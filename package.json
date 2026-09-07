@@ -1,6 +1,10 @@
 {
   "name": "churrasquin",
   "private": true,
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
   "workspaces": [
     "packages/*",
     "apps/*"
