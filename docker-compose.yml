@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: churrasquin
+      POSTGRES_PASSWORD: churrasquin
+      POSTGRES_DB: churrasquin
+    ports:
+      # 5433 no host: a 5432 costuma estar ocupada por outro Postgres local
+      - '5433:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U churrasquin']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:

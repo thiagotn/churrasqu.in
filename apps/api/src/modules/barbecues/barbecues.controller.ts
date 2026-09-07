@@ -1,11 +1,27 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { TIER_IDS } from '@churrasquin/calculator';
+import { AuthedRequest, JwtAuthGuard } from '../auth/auth.guard';
 import { CalculatorService } from '../calculator/calculator.service';
+import { BarbecuesService } from './barbecues.service';
 import { EstimateRequestDto } from './dto/estimate.dto';
+import { SaveBarbecueDto } from './dto/save-barbecue.dto';
 
 @Controller('barbecues')
 export class BarbecuesController {
-  constructor(private readonly calculator: CalculatorService) {}
+  constructor(
+    private readonly calculator: CalculatorService,
+    private readonly barbecues: BarbecuesService,
+  ) {}
 
   /** Público, sem salvar: lista resolvida + totais, e o total dos 3 níveis para a tela de escolha. */
   @Post('estimate')
@@ -19,5 +35,29 @@ export class BarbecuesController {
       TIER_IDS.map((tier) => [tier, this.calculator.estimate({ ...input, tier }, adjustments).total]),
     );
     return { ...result, tierTotals };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  create(@Req() req: AuthedRequest, @Body() dto: SaveBarbecueDto) {
+    return this.barbecues.create(req.user.sub, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  listMine(@Req() req: AuthedRequest) {
+    return this.barbecues.listMine(req.user.sub);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  get(@Req() req: AuthedRequest, @Param('id') id: string) {
+    return this.barbecues.get(req.user.sub, id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id')
+  update(@Req() req: AuthedRequest, @Param('id') id: string, @Body() dto: SaveBarbecueDto) {
+    return this.barbecues.update(req.user.sub, id, dto);
   }
 }

@@ -1,6 +1,6 @@
 import { AlcoholMode, TierId } from '@churrasquin/calculator';
 
-export type Screen = 'setup' | 'tiers' | 'edit' | 'save-teaser';
+export type Screen = 'setup' | 'tiers' | 'edit' | 'auth' | 'saved';
 
 export interface ChurrasState {
   screen: Screen;
@@ -12,6 +12,7 @@ export interface ChurrasState {
   eventDay: string;
   startTime: string;
   endTime: string;
+  eventName: string;
   eventAddress: string;
   eventCity: string;
   eventHint: string;
@@ -20,6 +21,10 @@ export interface ChurrasState {
   tier: TierId;
   edits: Record<string, number | null>;
   prices: Record<string, number>;
+  loggedIn: boolean;
+  userName: string;
+  savedId: string | null;
+  savedSlug: string | null;
 }
 
 export const initialState: ChurrasState = {
@@ -31,6 +36,7 @@ export const initialState: ChurrasState = {
   eventDay: '2026-09-19',
   startTime: '12:30',
   endTime: '19:00',
+  eventName: 'Churras da Laje',
   eventAddress: 'Rua das Brasas, 120',
   eventCity: 'Vila Brasa, São Paulo',
   eventHint: 'Portão azul, quintal do fundo',
@@ -39,13 +45,18 @@ export const initialState: ChurrasState = {
   tier: 'medio',
   edits: {},
   prices: {},
+  loggedIn: false,
+  userName: '',
+  savedId: null,
+  savedSlug: null,
 };
 
 export const STEP_OF_SCREEN: Record<Screen, number> = {
   setup: 1,
   tiers: 2,
   edit: 3,
-  'save-teaser': 4,
+  auth: 3,
+  saved: 4,
 };
 
 export type Action =
@@ -67,7 +78,8 @@ export function reducer(state: ChurrasState, action: Action): ChurrasState {
       return { ...state, screen: action.screen, maxStep: Math.max(state.maxStep, step) };
     }
     case 'reset':
-      return initialState;
+      // "Começar de novo" zera o churras, não a sessão do usuário
+      return { ...initialState, loggedIn: state.loggedIn, userName: state.userName };
     case 'chooseTier':
       return reducer({ ...state, tier: action.tier }, { type: 'go', screen: 'edit' });
     case 'editQty':

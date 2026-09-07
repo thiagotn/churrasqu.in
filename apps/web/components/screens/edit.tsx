@@ -67,10 +67,14 @@ export function EditScreen({
   state,
   result,
   dispatch,
+  onSave,
+  saving,
 }: {
   state: ChurrasState;
   result: CalculationResult;
   dispatch: React.Dispatch<Action>;
+  onSave: () => void;
+  saving: boolean;
 }) {
   const active = result.items.filter((i) => i.on);
   const off = result.items.filter((i) => !i.on);
@@ -154,10 +158,11 @@ export function EditScreen({
           </section>
 
           <button
-            onClick={() => dispatch({ type: 'go', screen: 'save-teaser' })}
-            className={`border-4 border-ink bg-mustard px-6 py-4 font-display text-[clamp(24px,3vw,30px)] tracking-wide text-ink shadow-comic-8 hover:shadow-comic-5 ${press}`}
+            onClick={onSave}
+            disabled={saving}
+            className={`border-4 border-ink bg-mustard px-6 py-4 font-display text-[clamp(24px,3vw,30px)] tracking-wide text-ink shadow-comic-8 hover:shadow-comic-5 disabled:opacity-60 ${press}`}
           >
-            Salvar e compartilhar
+            {saving ? 'Salvando…' : state.savedId ? 'Atualizar e compartilhar' : 'Salvar e compartilhar'}
           </button>
           <button
             onClick={() => dispatch({ type: 'go', screen: 'tiers' })}

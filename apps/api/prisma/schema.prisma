@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String     @id @default(cuid())
+  name         String
+  email        String     @unique
+  passwordHash String
+  createdAt    DateTime   @default(now())
+  barbecues    Barbecue[]
+}
+
+model Barbecue {
+  id           String         @id @default(cuid())
+  slug         String         @unique
+  eventName    String
+  eventDay     String // ISO yyyy-mm-dd
+  startTime    String // HH:mm
+  endTime      String // HH:mm
+  eventAddress String
+  eventCity    String
+  eventHint    String
+  alcoholMode  String
+  tier         String
+  men          Int
+  women        Int
+  kids         Int
+  // Totais do snapshot, em centavos — o evento salvo não muda quando o seed de preços muda
+  totalCents    Int
+  perAdultCents Int
+  meatListKg    Float
+  pixType      String?
+  pixKey       String?
+  owner        User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId      String
+  items        BarbecueItem[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model BarbecueItem {
+  id             String   @id @default(cuid())
+  barbecue       Barbecue @relation(fields: [barbecueId], references: [id], onDelete: Cascade)
+  barbecueId     String
+  itemId         String // id de domínio (ex.: medio-picanha) para reabrir edição
+  name           String
+  category       String
+  unit           String
+  qty            Float
+  unitPriceCents Int
+
+  @@index([barbecueId])
+}
