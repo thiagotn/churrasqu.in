@@ -1,0 +1,175 @@
+'use client';
+
+import { CalculationResult, Category, ListItem, TIERS } from '@churrasquin/calculator';
+import { kgLabel, money } from '../../lib/format';
+import { Action, ChurrasState } from '../../lib/state';
+import { PriceInput, QtyInput, press } from '../ui';
+
+const CATEGORY_ORDER: Category[] = ['Carnes', 'Bebidas', 'Acompanhamentos', 'Essenciais'];
+
+const UNIT_LABEL: Record<ListItem['unit'], string> = {
+  kg: 'por kg',
+  un: 'por un',
+  kit: 'por kit',
+  saco: 'por saco',
+  dz: 'por dz',
+};
+
+const stepOf = (item: ListItem): number => (item.unit === 'kg' ? 0.5 : 1);
+
+function ItemRow({ item, dispatch }: { item: ListItem; dispatch: React.Dispatch<Action> }) {
+  const step = stepOf(item);
+  const setQty = (qty: number) => dispatch({ type: 'editQty', id: item.id, qty: Math.max(step, qty) });
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-[#17130F1A] py-3 last:border-b-0">
+      <div className="min-w-[140px]">
+        <div className="text-[16px] font-black text-ink">{item.name}</div>
+        <div className="mt-1 flex items-center gap-1 text-[13px] font-bold text-muted">
+          {UNIT_LABEL[item.unit]} · R$
+          <PriceInput
+            value={item.unitPrice}
+            onCommit={(price) => dispatch({ type: 'editPrice', id: item.id, price })}
+          />
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          aria-label={`menos ${item.name}`}
+          onClick={() => setQty(item.qty - step)}
+          className={`h-10 w-10 rounded-[10px] border-[3px] border-ink bg-cream font-black text-ink hover:bg-mustard ${press}`}
+        >
+          −
+        </button>
+        <QtyInput value={item.qty} min={step} onCommit={setQty} />
+        <button
+          aria-label={`mais ${item.name}`}
+          onClick={() => setQty(item.qty + step)}
+          className={`h-10 w-10 rounded-[10px] border-[3px] border-ink bg-cream font-black text-ink hover:bg-mustard ${press}`}
+        >
+          +
+        </button>
+        <div className="min-w-[92px] text-right text-[15px] font-black text-ink">
+          {money(item.qty * item.unitPrice)}
+        </div>
+        <button
+          aria-label={`remover ${item.name}`}
+          onClick={() => dispatch({ type: 'removeItem', id: item.id })}
+          className={`h-10 w-10 border-[3px] border-ink bg-paper font-black text-ember hover:bg-ember hover:text-paper ${press}`}
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export function EditScreen({
+  state,
+  result,
+  dispatch,
+}: {
+  state: ChurrasState;
+  result: CalculationResult;
+  dispatch: React.Dispatch<Action>;
+}) {
+  const active = result.items.filter((i) => i.on);
+  const off = result.items.filter((i) => !i.on);
+  const hasAdjustments = Object.keys(state.edits).length + Object.keys(state.prices).length > 0;
+
+  return (
+    <div className="flex flex-col gap-[clamp(16px,2.4vw,28px)]">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <h1 className="font-display text-[clamp(32px,5vw,48px)] tracking-wide text-ink">
+          Lista {TIERS[state.tier].name}
+        </h1>
+        {hasAdjustments && (
+          <button
+            onClick={() => dispatch({ type: 'restore' })}
+            className={`rounded-full border-[3px] border-ink bg-paper px-4 py-2 text-[14px] font-extrabold text-ink shadow-comic-3 hover:bg-mustard ${press}`}
+          >
+            Restaurar sugestão
+          </button>
+        )}
+      </div>
+
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] items-start gap-[clamp(16px,2.4vw,28px)]">
+        {/* Categorias */}
+        <div className="flex flex-col gap-[clamp(16px,2.4vw,28px)]">
+          {CATEGORY_ORDER.map((category) => {
+            const items = active.filter((i) => i.category === category);
+            if (items.length === 0) return null;
+            const subtotal = items.reduce((a, i) => a + i.qty * i.unitPrice, 0);
+            return (
+              <section key={category} className="border-4 border-ink bg-paper shadow-comic-10">
+                <header className="flex items-center justify-between bg-ink px-4 py-3 text-paper">
+                  <span className="font-display text-[26px] tracking-wide">{category}</span>
+                  <span className="text-[15px] font-extrabold">{money(subtotal)}</span>
+                </header>
+                <div className="px-4">
+                  {items.map((item) => (
+                    <ItemRow key={item.id} item={item} dispatch={dispatch} />
+                  ))}
+                </div>
+              </section>
+            );
+          })}
+
+          {off.length > 0 && (
+            <section className="border-[3px] border-dashed border-[#17130F66] bg-cream p-4">
+              <h2 className="font-display text-[22px] tracking-wide text-ink">Bora incluir mais?</h2>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {off.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() =>
+                      dispatch({ type: 'editQty', id: item.id, qty: Math.max(stepOf(item), item.qty) })
+                    }
+                    className={`rounded-full border-[3px] border-ink bg-paper px-3 py-2 text-[13px] font-extrabold text-ink shadow-comic-3 hover:bg-mustard ${press}`}
+                  >
+                    + {item.name} · {money(item.unitPrice)}
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+
+        {/* Total (sticky) */}
+        <div className="sticky top-4 flex flex-col gap-4">
+          <section className="border-4 border-ink bg-ember p-[clamp(18px,2.5vw,30px)] text-paper shadow-comic-10">
+            <div className="text-[12px] font-black uppercase tracking-[1.5px] text-paper/85">Total do churras</div>
+            <div className="font-display text-[clamp(44px,6vw,62px)] leading-none">{money(result.total)}</div>
+            <dl className="mt-3 text-[15px] font-extrabold">
+              {[
+                ['Por adulto', money(result.perAdult)],
+                ['Itens na lista', String(active.length)],
+                ['Carne total', kgLabel(result.meatListKg)],
+              ].map(([k, v]) => (
+                <div key={k} className="flex justify-between border-t-[3px] border-dotted border-paper/40 py-2">
+                  <dt>{k}</dt>
+                  <dd>{v}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+
+          <button
+            onClick={() => dispatch({ type: 'go', screen: 'save-teaser' })}
+            className={`border-4 border-ink bg-mustard px-6 py-4 font-display text-[clamp(24px,3vw,30px)] tracking-wide text-ink shadow-comic-8 hover:shadow-comic-5 ${press}`}
+          >
+            Salvar e compartilhar
+          </button>
+          <button
+            onClick={() => dispatch({ type: 'go', screen: 'tiers' })}
+            className={`rounded-full border-[3px] border-ink bg-paper px-4 py-2 text-[14px] font-extrabold text-ink shadow-comic-3 hover:bg-mustard ${press}`}
+          >
+            ← Trocar nível da lista
+          </button>
+          <p className="text-[13px] font-bold text-muted">
+            Salvar exige uma conta rapidinha — é o que garante que o link do seu churras continue no ar.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

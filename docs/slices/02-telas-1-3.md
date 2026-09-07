@@ -1,6 +1,6 @@
 # Fatia 2 — Telas 1–3 no front (Setup, Nível, Lista)
 
-**Status: TODO**
+**Status: DONE**
 
 ## Objetivo
 
@@ -20,13 +20,19 @@ As três primeiras telas do fluxo, hifi conforme o handoff (§ Screens 1–3), c
 
 ## Checklist
 
-- [ ] Header + stepper + fundo halftone
-- [ ] Tela 1 Setup completa e responsiva
-- [ ] Tela 2 Nível com totais reativos por nível
-- [ ] Tela 3 Lista com edição de qty/preço, remoção, chips e restaurar
-- [ ] Hover/interações da assinatura visual (translate 3px + sombra reduzida, secundário → mustard)
-- [ ] `next build` passa
-- [ ] Roadmap atualizado + commit
+- [x] Header + stepper + fundo halftone
+- [x] Tela 1 Setup completa e responsiva
+- [x] Tela 2 Nível com totais reativos por nível
+- [x] Tela 3 Lista com edição de qty/preço, remoção, chips e restaurar
+- [x] Hover/interações da assinatura visual (translate 3px + sombra reduzida, secundário → mustard)
+- [x] `next build` passa (+ smoke test SSR da tela 1)
+- [x] Roadmap atualizado + commit
+
+## Notas
+
+- Recálculo é 100% client-side via `@churrasquin/calculator` (ADR 0003); a API de estimativa fica para o fluxo de salvar (fatia 3).
+- CTA "Salvar e compartilhar" leva a um card provisório ("Quase lá!") que aponta para o roadmap; vira o fluxo auth → share na fatia 3.
+- Inputs numéricos aceitam vírgula pt-BR (`89,90`) via `CommitInput` (`components/ui.tsx`): texto livre enquanto digita, commit quando parseável, re-formata no blur.
 
 ## Como verificar
 

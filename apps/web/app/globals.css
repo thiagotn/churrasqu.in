@@ -16,10 +16,13 @@
   --font-display: var(--font-bangers), 'Bangers', cursive;
   --font-sans: var(--font-nunito), 'Nunito', ui-sans-serif, system-ui, sans-serif;
 
-  --shadow-comic-sm: 3px 3px 0 #17130f;
-  --shadow-comic: 5px 5px 0 #17130f;
-  --shadow-comic-lg: 8px 8px 0 #17130f;
-  --shadow-comic-xl: 10px 10px 0 #17130f;
+  --shadow-comic-3: 3px 3px 0 #17130f;
+  --shadow-comic-4: 4px 4px 0 #17130f;
+  --shadow-comic-5: 5px 5px 0 #17130f;
+  --shadow-comic-6: 6px 6px 0 #17130f;
+  --shadow-comic-7: 7px 7px 0 #17130f;
+  --shadow-comic-8: 8px 8px 0 #17130f;
+  --shadow-comic-10: 10px 10px 0 #17130f;
 }
 
 body {
