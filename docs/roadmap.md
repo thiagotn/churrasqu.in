@@ -1,6 +1,6 @@
 # Roadmap de fatias
 
-> Fatias 0–6: **todas `DONE`**. O deploy real vive no repo `homelab` (`helm/apps/churrasquin/`, ADR 0008 de lá; ver nota na fatia 6). Próximas candidatas (a priorizar): repo GitHub + CI de build/push com write-back de tag no homelab; painel "meus churras" + quem pagou; seed do catálogo no banco (adiado na fatia 3).
+> Fatias 0–6: **todas `DONE`**. O deploy real vive no repo `homelab` (`helm/apps/churrasquin/`, ADR 0008 de lá; ver nota na fatia 6). Repo publicado em `github.com/thiagotn/churrasqu.in` com CI (`.github/workflows/`): testes em PR, e em main testes → imagens GHCR → write-back de tag no homelab. Próximas candidatas (a priorizar): painel "meus churras" + quem pagou; seed do catálogo no banco (adiado na fatia 3).
 
 | # | Fatia | Status | Doc | Entrega |
 |---|---|---|---|---|

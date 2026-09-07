@@ -1,0 +1,120 @@
+# Fluxo de main: testes → imagens no GHCR (api + web) → write-back da tag no repo homelab.
+# O Argo CD detecta o commit no homelab e faz o rollout — o cluster NÃO recebe nada deste CI
+# (mesmo padrão do dratatimayumi-web/build-image.yml; ver homelab/docs/adr/0008).
+# Credencial: deploy key de ESCRITA do homelab em secrets.HOMELAB_DEPLOY_KEY (escopada ao repo).
+name: Build and push container images
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'README.md'
+      - 'docs/**'
+      - 'design_handoff_churrasquin/**'
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: churrasquin
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/churrasquin
+      JWT_SECRET: ci-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: |
+          npm run prisma:generate --workspace=apps/api
+          npm run prisma:deploy --workspace=apps/api
+      - run: npm test
+
+  build-push:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        app: [api, web]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/churrasquin-${{ matrix.app }}
+          tags: |
+            type=sha,format=long
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/${{ matrix.app }}/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ matrix.app }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.app }}
+
+  # GitOps: atualiza as tags no kustomization do homelab e dá push; o Argo faz o resto.
+  bump-homelab-tag:
+    needs: build-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout homelab (deploy key SSH)
+        uses: actions/checkout@v4
+        with:
+          repository: thiagotn/homelab
+          ssh-key: ${{ secrets.HOMELAB_DEPLOY_KEY }}
+          path: homelab
+
+      - name: Atualizar newTag no kustomization e dar push
+        working-directory: homelab
+        run: |
+          set -euo pipefail
+          TAG="sha-${GITHUB_SHA}"
+          FILE=helm/apps/churrasquin/kustomization.yaml
+          yq -i "(.images[] | select(.name == \"ghcr.io/thiagotn/churrasquin-api\")).newTag = \"${TAG}\"" "$FILE"
+          yq -i "(.images[] | select(.name == \"ghcr.io/thiagotn/churrasquin-web\")).newTag = \"${TAG}\"" "$FILE"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$FILE"
+          if git diff --cached --quiet; then
+            echo "Tag já é ${TAG}; nada a commitar."
+          else
+            git commit -m "deploy(churrasquin): ${TAG} [skip ci]"
+            git push
+          fi

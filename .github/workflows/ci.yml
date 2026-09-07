@@ -1,0 +1,48 @@
+# CI de pull request: testes (domínio + api unit + e2e contra Postgres real) e builds.
+# O fluxo de main (imagens + write-back GitOps) vive em build-image.yml.
+name: CI
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: churrasquin
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/churrasquin
+      JWT_SECRET: ci-secret
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci --no-audit --no-fund
+
+      - name: Prisma generate + migrate
+        run: |
+          npm run prisma:generate --workspace=apps/api
+          npm run prisma:deploy --workspace=apps/api
+
+      - name: Testes (domínio + api unit + e2e)
+        run: npm test
+
+      - name: Build (pacote + api + web)
+        run: npm run build
