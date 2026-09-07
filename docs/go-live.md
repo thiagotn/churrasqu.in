@@ -1,10 +1,11 @@
 # Go-live — dependências pendentes (checklist de referência)
 
-> Atualizado em 2026-09-08 (3ª revisão). **A–F concluídos.** Zona delegada e servida pela Cloudflare
-> (kiki/vern.ns.cloudflare.com); app no cluster `Synced/Healthy` (api `/api/health` com db up, web ok);
-> certificado `churrasquin-tls` emitido — prova que o token do cert-manager cobre a zona (E.2).
-> Incidente registrado: a 1ª `DATABASE_URL` foi criada com o placeholder `<SENHA>` literal → P1000 no
-> migrate; corrigido recriando o secret com a senha do `churrasquin-db-init`. Falta só o **G**.
+> Atualizado em 2026-09-08 (4ª revisão). **🎉 NO AR — A–G concluídos.** DNS criado pelo dash
+> (CNAME proxied → `<tunnel-id>.cfargotunnel.com` para root e www). Gotcha do G: regra nova no túnel
+> exige `kubectl -n cloudflared rollout restart deploy/cloudflared` (ConfigMap não recarrega — sem isso,
+> 404 vazio do catch-all; documentado no README do cloudflared no homelab). Smoke test completo em
+> produção ok: home, signup, salvar (churras-de-estreia-b1c3), convite público com payload Pix,
+> QR PNG, RSVP e /c/<slug>. Resta o **H** (opcional).
 
 ## A. CI write-back (GitHub)
 
@@ -84,11 +85,11 @@ inertes sem DNS e o app só entra no cluster no passo F.6.
 
 ## G. DNS pelo túnel (último passo — vira a chave)
 
-- [ ] ```bash
+- [x] ```bash
   cloudflared tunnel route dns --overwrite-dns 2c96e043-273e-4cf3-b0dd-479cceb1b357 churrasqu.in
   cloudflared tunnel route dns --overwrite-dns 2c96e043-273e-4cf3-b0dd-479cceb1b357 www.churrasqu.in
   ```
-- [ ] Smoke test público: `https://churrasqu.in` (fluxo setup → lista), `https://churrasqu.in/api/health`,
+- [x] Smoke test público: `https://churrasqu.in` (fluxo setup → lista), `https://churrasqu.in/api/health`,
   salvar um churras e abrir `/c/<slug>` (QR/Pix/RSVP)
 
 ## H. Pós-go-live (sem pressa)
