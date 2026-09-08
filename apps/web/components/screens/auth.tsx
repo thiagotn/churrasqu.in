@@ -11,7 +11,7 @@ interface AuthResponse {
 
 const BENEFITS = [
   'Salvar este churras e reaproveitar a lista no próximo',
-  'Gerar o link churrasqu.in/c/… para mandar no grupo',
+  'Gerar o link churrasqu.in/ho/… para mandar no grupo',
   'QR Code com Pix e valor por pessoa',
   'Ver quem confirmou (e, em breve, quem pagou)',
 ];

@@ -19,7 +19,7 @@ Convidado confirma presença na página pública e o organizador vê quem vai.
 
 ```bash
 npm test
-# ou no browser: abrir /c/<slug>, responder, recarregar — a resposta persiste e os confirmados atualizam
+# ou no browser: abrir /ho/<slug>, responder, recarregar — a resposta persiste e os confirmados atualizam
 ```
 
 ## Notas

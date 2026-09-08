@@ -70,6 +70,6 @@ export class SharingService {
   async qrContent(slug: string): Promise<string> {
     const b = await this.bySlug(slug);
     const pixKey = b.pixType && b.pixKey ? normalizePixKey(b.pixType as PixKeyType, b.pixKey) : null;
-    return pixKey ? this.payloadFor(b, pixKey) : `https://churrasqu.in/c/${b.slug}`;
+    return pixKey ? this.payloadFor(b, pixKey) : `https://churrasqu.in/ho/${b.slug}`;
   }
 }

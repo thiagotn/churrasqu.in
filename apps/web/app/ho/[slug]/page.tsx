@@ -47,7 +47,7 @@ export async function generateMetadata({
       type: 'website',
       siteName: 'churrasqu.in',
       locale: 'pt_BR',
-      url: `/c/${slug}`,
+      url: `/ho/${slug}`,
       title,
       description,
       images: [

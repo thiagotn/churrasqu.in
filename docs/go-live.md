@@ -5,7 +5,7 @@
 > exige `kubectl -n cloudflared rollout restart deploy/cloudflared` (ConfigMap não recarrega — sem isso,
 > 404 vazio do catch-all; documentado no README do cloudflared no homelab). Smoke test completo em
 > produção ok: home, signup, salvar (churras-de-estreia-b1c3), convite público com payload Pix,
-> QR PNG, RSVP e /c/<slug>. Resta o **H** (opcional).
+> QR PNG, RSVP e /ho/<slug>. Resta o **H** (opcional).
 
 ## A. CI write-back (GitHub)
 
@@ -90,7 +90,7 @@ inertes sem DNS e o app só entra no cluster no passo F.6.
   cloudflared tunnel route dns --overwrite-dns 2c96e043-273e-4cf3-b0dd-479cceb1b357 www.churrasqu.in
   ```
 - [x] Smoke test público: `https://churrasqu.in` (fluxo setup → lista), `https://churrasqu.in/api/health`,
-  salvar um churras e abrir `/c/<slug>` (QR/Pix/RSVP)
+  salvar um churras e abrir `/ho/<slug>` (QR/Pix/RSVP; `/c/<slug>` antigo redireciona 308)
 
 ## H. Pós-go-live (sem pressa)
 

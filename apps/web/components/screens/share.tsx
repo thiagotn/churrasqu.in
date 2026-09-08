@@ -27,7 +27,7 @@ export function ShareScreen({
   const [qrVersion, setQrVersion] = useState(0);
   const patch = (p: Partial<ChurrasState>) => dispatch({ type: 'patch', patch: p });
 
-  const publicUrl = `churrasqu.in/c/${state.savedSlug}`;
+  const publicUrl = `churrasqu.in/ho/${state.savedSlug}`;
   const qrSrc = `${API_BASE}/public/${state.savedSlug}/qrcode?v=${qrVersion}`;
 
   const copyLink = async () => {
@@ -72,7 +72,7 @@ export function ShareScreen({
           </p>
         </div>
         <a
-          href={`/c/${state.savedSlug}`}
+          href={`/ho/${state.savedSlug}`}
           target="_blank"
           rel="noreferrer"
           className={`border-[3px] border-ink bg-ink px-5 py-3 text-[15px] font-black text-paper shadow-[6px_6px_0_#C2341F] ${press}`}
