@@ -81,7 +81,7 @@ export function EditScreen({
   const hasAdjustments = Object.keys(state.edits).length + Object.keys(state.prices).length > 0;
 
   return (
-    <div className="flex flex-col gap-[clamp(16px,2.4vw,28px)]">
+    <div className="flex flex-col gap-[clamp(16px,2.4vw,28px)] pb-24 md:pb-0">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <h1 className="font-display text-[clamp(32px,5vw,48px)] tracking-wide text-ink">
           Lista {TIERS[state.tier].name}
@@ -174,6 +174,22 @@ export function EditScreen({
             Salvar exige uma conta rapidinha — é o que garante que o link do seu churras continue no ar.
           </p>
         </div>
+      </div>
+
+      {/* Mobile: total sempre à vista + ação principal ao alcance do polegar */}
+      <div className="fixed inset-x-0 bottom-0 z-20 flex items-center justify-between gap-3 border-t-4 border-ink bg-mustard px-4 py-2 md:hidden">
+        <div>
+          <div className="text-[11px] font-black uppercase tracking-[1.5px] text-ink/70">Total do churras</div>
+          <div className="font-display text-[24px] leading-none text-ink">{money(result.total)}</div>
+          <div className="text-[12px] font-bold text-ink/80">{money(result.perAdult)} por adulto</div>
+        </div>
+        <button
+          onClick={onSave}
+          disabled={saving}
+          className={`border-[3px] border-ink bg-ember px-4 py-3 font-display text-[18px] tracking-wide text-paper shadow-comic-3 disabled:opacity-60 ${press}`}
+        >
+          {saving ? 'Salvando…' : state.savedId ? 'Atualizar →' : 'Salvar →'}
+        </button>
       </div>
     </div>
   );

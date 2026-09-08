@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useReducer, useState } from 'react';
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import {
   Adjustments,
   CalculationResult,
@@ -10,7 +10,7 @@ import {
   calculate,
 } from '@churrasquin/calculator';
 import { ApiError, api, session } from '../lib/api';
-import { initialState, reducer } from '../lib/state';
+import { STEP_OF_SCREEN, Screen, initialState, reducer } from '../lib/state';
 import { Header } from './header';
 import { Stepper } from './stepper';
 import { AuthScreen } from './screens/auth';
@@ -24,15 +24,64 @@ interface SavedBarbecue {
   slug: string;
 }
 
+// Passos do wizard viram hashes na URL: histórico nativo do browser (o voltar do
+// celular volta um passo) sem tocar no history.state interno do App Router do Next.
+const HASH_OF: Record<Screen, string> = {
+  setup: 'convidados',
+  tiers: 'nivel',
+  edit: 'lista',
+  auth: 'conta',
+  saved: 'compartilhar',
+};
+const SCREEN_OF: Record<string, Screen> = Object.fromEntries(
+  (Object.entries(HASH_OF) as [Screen, string][]).map(([screen, hash]) => [hash, screen]),
+);
+
 export function ChurrasApp() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [saveError, setSaveError] = useState('');
   const [saving, setSaving] = useState(false);
 
+  const stepRef = useRef<HTMLElement>(null);
+  const prevScreen = useRef(state.screen);
+  const cameFromHistory = useRef(false);
+  const maxStepRef = useRef(state.maxStep);
+  maxStepRef.current = state.maxStep;
+
   useEffect(() => {
     const current = session.get();
     if (current) dispatch({ type: 'patch', patch: { loggedIn: true, userName: current.name } });
   }, []);
+
+  // Botão voltar do celular navega entre os passos em vez de sair do site.
+  useEffect(() => {
+    // o reset de rolagem é nosso; sem isso o browser restaura o scroll antigo no voltar
+    window.history.scrollRestoration = 'manual';
+    // deep-link com hash cai no começo do wizard (o estado do churras é local)
+    window.history.replaceState(window.history.state, '', `#${HASH_OF.setup}`);
+    const onHash = () => {
+      const target = SCREEN_OF[window.location.hash.slice(1)];
+      if (!target || target === prevScreen.current) return;
+      // não deixa o hash pular além do progresso alcançado
+      if (STEP_OF_SCREEN[target] > maxStepRef.current) return;
+      cameFromHistory.current = true;
+      dispatch({ type: 'patch', patch: { screen: target } });
+    };
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+
+  // Wizard mobile: cada troca de passo abre no TOPO (a SPA preservava a rolagem do
+  // passo anterior — clicar o CTA no fim do formulário abria o meio da tela seguinte)
+  // e recebe foco para leitores de tela anunciarem o passo novo.
+  useEffect(() => {
+    if (prevScreen.current === state.screen) return;
+    prevScreen.current = state.screen;
+    if (cameFromHistory.current) cameFromHistory.current = false;
+    else window.location.hash = HASH_OF[state.screen];
+    window.scrollTo(0, 0);
+    stepRef.current?.focus({ preventScroll: true });
+  }, [state.screen]);
 
   const { result, tierResults } = useMemo(() => {
     const input: CalculatorInput = {
@@ -105,6 +154,8 @@ export function ChurrasApp() {
         <p className="border-[3px] border-ember bg-paper p-3 text-[13px] font-black text-ember">{saveError}</p>
       )}
 
+      {/* key remonta o passo (animação de entrada); tabIndex -1 permite o foco programático */}
+      <main key={state.screen} ref={stepRef} tabIndex={-1} className="step-enter outline-none">
       {state.screen === 'setup' && <SetupScreen state={state} result={result} dispatch={dispatch} />}
       {state.screen === 'tiers' && (
         <TiersScreen state={state} result={result} tierResults={tierResults} dispatch={dispatch} />
@@ -124,6 +175,7 @@ export function ChurrasApp() {
       {state.screen === 'saved' && (
         <ShareScreen state={state} result={result} dispatch={dispatch} onUpdate={onSaveClick} saving={saving} />
       )}
+      </main>
 
       <footer className="mt-auto flex flex-wrap justify-between gap-2 border-t-[3px] border-[#17130F33] pt-4 text-[13px] font-bold text-muted">
         <span>churrasqu.in — ninguém paga a mais, ninguém passa fome</span>
