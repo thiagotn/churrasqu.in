@@ -61,7 +61,7 @@ export function PriceInput({ value, onCommit }: { value: number; onCommit: (v: n
       value={value}
       onCommit={onCommit}
       format={priceFmt}
-      className="h-[34px] w-[82px] border-[3px] border-ink bg-white text-center text-[14px] font-black text-ink outline-none focus:bg-paper"
+      className="h-10 w-[56px] border-[3px] border-ink bg-white text-center text-[13px] font-black text-ink outline-none focus:bg-paper md:w-[82px] md:text-[14px]"
     />
   );
 }
@@ -81,7 +81,7 @@ export function QtyInput({
       onCommit={onCommit}
       format={qtyFmt}
       min={min}
-      className="h-[40px] w-[72px] border-[3px] border-ink bg-white text-center text-[15px] font-black text-ink outline-none focus:bg-paper"
+      className="h-10 w-[46px] border-[3px] border-ink bg-white text-center text-[14px] font-black text-ink outline-none focus:bg-paper md:w-[64px] md:text-[15px]"
     />
   );
 }

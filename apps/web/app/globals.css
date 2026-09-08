@@ -47,6 +47,12 @@
   }
 }
 
+/* Paleta hifi é clara e final (handoff): impede o auto-dark do Chrome Android
+   de inverter as cores da marca. */
+:root {
+  color-scheme: only light;
+}
+
 body {
   background-color: var(--color-cream);
   background-image:

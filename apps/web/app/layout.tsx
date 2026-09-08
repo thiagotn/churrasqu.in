@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Bangers, Nunito } from 'next/font/google';
 import './globals.css';
 
@@ -13,6 +13,11 @@ const nunito = Nunito({
   subsets: ['latin'],
   variable: '--font-nunito',
 });
+
+export const viewport: Viewport = {
+  themeColor: '#F2E6D0',
+  colorScheme: 'only light',
+};
 
 const DESCRIPTION =
   'Monte o churras e divida a conta: lista de compras por nível ($, $$, $$$), link de convite com QR Code e Pix para o rateio. Ninguém paga a mais. Ninguém passa fome.';

@@ -7,32 +7,50 @@ import { PriceInput, QtyInput, press } from '../ui';
 
 const CATEGORY_ORDER: Category[] = ['Carnes', 'Bebidas', 'Acompanhamentos', 'Essenciais'];
 
-const UNIT_LABEL: Record<ListItem['unit'], string> = {
-  kg: 'por kg',
-  un: 'por un',
-  kit: 'por kit',
-  saco: 'por saco',
-  dz: 'por dz',
+// Preço unitário compacto: "R$/kg" em vez de "por kg · R$"
+const UNIT_SHORT: Record<ListItem['unit'], string> = {
+  kg: 'kg',
+  un: 'un',
+  kit: 'kit',
+  saco: 'saco',
+  dz: 'dz',
 };
 
 const stepOf = (item: ListItem): number => (item.unit === 'kg' ? 0.5 : 1);
 
+// Mobile: nome (+ remover) na 1ª linha e TODOS os controles numa única 2ª linha,
+// sem quebra. Desktop (md+): o item inteiro numa linha só.
 function ItemRow({ item, dispatch }: { item: ListItem; dispatch: React.Dispatch<Action> }) {
   const step = stepOf(item);
   const setQty = (qty: number) => dispatch({ type: 'editQty', id: item.id, qty: Math.max(step, qty) });
+  const removeButton = (extra: string) => (
+    <button
+      aria-label={`remover ${item.name}`}
+      onClick={() => dispatch({ type: 'removeItem', id: item.id })}
+      className={`h-10 w-10 shrink-0 border-[3px] border-ink bg-paper font-black text-ember hover:bg-ember hover:text-paper ${press} ${extra}`}
+    >
+      ✕
+    </button>
+  );
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-[#17130F1A] py-3 last:border-b-0">
-      <div className="min-w-[140px]">
-        <div className="text-[16px] font-black text-ink">{item.name}</div>
-        <div className="mt-1 flex items-center gap-1 text-[13px] font-bold text-muted">
-          {UNIT_LABEL[item.unit]} · R$
-          <PriceInput
-            value={item.unitPrice}
-            onCommit={(price) => dispatch({ type: 'editPrice', id: item.id, price })}
-          />
-        </div>
+    <div className="flex flex-wrap items-center gap-x-1.5 gap-y-2 border-b-2 border-[#17130F1A] py-3 last:border-b-0 md:flex-nowrap md:gap-x-3">
+      {/* Nome: linha própria no mobile (w-full força a quebra), flex-1 no desktop */}
+      <div className="flex w-full min-w-0 items-center justify-between gap-2 md:w-auto md:flex-1">
+        <span className="truncate text-[15px] font-black text-ink md:text-[16px]" title={item.name}>
+          {item.name}
+        </span>
+        {removeButton('md:hidden')}
       </div>
-      <div className="flex items-center gap-2">
+
+      <label className="flex shrink-0 items-center gap-1 whitespace-nowrap text-[13px] font-bold text-muted">
+        R$/{UNIT_SHORT[item.unit]}
+        <PriceInput
+          value={item.unitPrice}
+          onCommit={(price) => dispatch({ type: 'editPrice', id: item.id, price })}
+        />
+      </label>
+
+      <div className="flex shrink-0 items-center gap-1">
         <button
           aria-label={`menos ${item.name}`}
           onClick={() => setQty(item.qty - step)}
@@ -48,17 +66,13 @@ function ItemRow({ item, dispatch }: { item: ListItem; dispatch: React.Dispatch<
         >
           +
         </button>
-        <div className="min-w-[92px] text-right text-[15px] font-black text-ink">
-          {money(item.qty * item.unitPrice)}
-        </div>
-        <button
-          aria-label={`remover ${item.name}`}
-          onClick={() => dispatch({ type: 'removeItem', id: item.id })}
-          className={`h-10 w-10 border-[3px] border-ink bg-paper font-black text-ember hover:bg-ember hover:text-paper ${press}`}
-        >
-          ✕
-        </button>
       </div>
+
+      <div className="ml-auto min-w-[72px] text-right text-[14px] font-black text-ink md:ml-0 md:min-w-[92px] md:text-[15px]">
+        {money(item.qty * item.unitPrice)}
+      </div>
+
+      {removeButton('hidden md:block')}
     </div>
   );
 }
