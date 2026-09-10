@@ -17,5 +17,5 @@ A fatia 3 introduz persistência (users, barbecues salvos com snapshot da lista)
 ## Consequências
 
 - e2e de auth/barbecues exigem o Postgres do compose de pé (documentado na fatia 3).
-- Migrar o **seed do catálogo** para o banco ficou **adiado**: o seed continua em `packages/calculator` (ADR 0003) até existir tela/necessidade de administrar preços — anotado na doc da fatia 3.
+- Migrar o **seed do catálogo** para o banco ficou **adiado**: o seed continua em `packages/calculator` (ADR 0003) até existir tela/necessidade de administrar preços — anotado na doc da fatia 3. **(Resolvido na fatia 8 — ADR 0006.)**
 - Trocar de ORM depois custa caro; aceito, Prisma cobre o escopo previsto (CRUD + migrations + seed).

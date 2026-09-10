@@ -1,4 +1,4 @@
-import { TIERS } from './catalog';
+import { TIERS, TierSeed } from './catalog';
 import { slugify } from './slug';
 import {
   Adjustments,
@@ -51,14 +51,17 @@ export function meatBaseKg(
 export const meatForTier = (baseKg: number, tier: TierId): number =>
   tier === 'gourmet' ? baseKg * 1.05 : baseKg;
 
-function validate(input: CalculatorInput): void {
+/** Fonte do catálogo (níveis + preços de referência). Default: seed do pacote; a api injeta o banco. */
+export type Catalog = Record<TierId, TierSeed>;
+
+function validate(input: CalculatorInput, catalog: Catalog): void {
   for (const field of ['men', 'women', 'kids'] as const) {
     const v = input[field];
     if (!Number.isInteger(v) || v < 0) {
       throw new Error(`${field} deve ser um inteiro >= 0 (recebido: ${v})`);
     }
   }
-  if (!TIERS[input.tier]) {
+  if (!catalog[input.tier]) {
     throw new Error(`Nível desconhecido: ${String(input.tier)}`);
   }
   if (!ALCOHOL_MODES.includes(input.alcoholMode)) {
@@ -74,9 +77,9 @@ function validate(input: CalculatorInput): void {
  * Ids são estáveis por nome (`medio-picanha`), para que edits/prices sobrevivam
  * a mudanças de convidados, horário ou política de bebida.
  */
-export function buildBaseList(input: CalculatorInput): ListItem[] {
-  validate(input);
-  const tier = TIERS[input.tier];
+export function buildBaseList(input: CalculatorInput, catalog: Catalog = TIERS): ListItem[] {
+  validate(input, catalog);
+  const tier = catalog[input.tier];
   const adults = input.men + input.women;
   const guests = adults + input.kids;
   const hours = durationHours(input.startTime, input.endTime);
@@ -202,8 +205,9 @@ export interface SnapshotItem {
 export function adjustmentsFromSnapshot(
   input: CalculatorInput,
   snapshot: SnapshotItem[],
+  catalog: Catalog = TIERS,
 ): Adjustments {
-  const base = buildBaseList(input);
+  const base = buildBaseList(input, catalog);
   const saved = new Map(snapshot.map((s) => [s.itemId, s]));
   const edits: Record<string, number | null> = {};
   const prices: Record<string, number> = {};
@@ -219,8 +223,12 @@ export function adjustmentsFromSnapshot(
   return { edits, prices };
 }
 
-export function calculate(input: CalculatorInput, adjustments?: Adjustments): CalculationResult {
-  const items = applyAdjustments(buildBaseList(input), adjustments);
+export function calculate(
+  input: CalculatorInput,
+  adjustments?: Adjustments,
+  catalog: Catalog = TIERS,
+): CalculationResult {
+  const items = applyAdjustments(buildBaseList(input, catalog), adjustments);
   const adults = input.men + input.women;
   const guests = adults + input.kids;
   const hours = durationHours(input.startTime, input.endTime);

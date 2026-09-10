@@ -15,4 +15,4 @@ O domínio puro (tipos, catálogo/seed, cálculo, slug) vive em `packages/calcul
 - Uma única fonte das regras; front recalcula localmente, backend valida/persiste com o mesmo código.
 - Os testes do domínio moram no pacote; a api testa a casca (DI, DTOs, HTTP).
 - O pacote compila para `dist/` (CJS + d.ts); scripts da raiz garantem `build` do pacote antes de testar/buildar os apps.
-- Preços de referência dentro do pacote são o **seed**; quando o banco entrar (fatia 3), o pacote passa a receber o catálogo como parâmetro e o seed migra para o banco — a assinatura `calculate(input, adjustments)` ganha uma fonte de catálogo injetável.
+- Preços de referência dentro do pacote são o **seed**; quando o banco entrar (fatia 3), o pacote passa a receber o catálogo como parâmetro e o seed migra para o banco — a assinatura `calculate(input, adjustments)` ganha uma fonte de catálogo injetável. **(Feito na fatia 8 — ADR 0006.)**

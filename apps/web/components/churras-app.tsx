@@ -5,8 +5,11 @@ import {
   Adjustments,
   CalculationResult,
   CalculatorInput,
+  Catalog,
+  TIERS,
   TIER_IDS,
   TierId,
+  TierSeed,
   adjustmentsFromSnapshot,
   calculate,
 } from '@churrasquin/calculator';
@@ -42,6 +45,20 @@ export function ChurrasApp() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [saveError, setSaveError] = useState('');
   const [saving, setSaving] = useState(false);
+  // Catálogo de runtime: começa com o seed do pacote (primeira render instantânea)
+  // e troca em silêncio pelos preços do banco quando a API responde (ADR 0006).
+  const [catalog, setCatalog] = useState<Catalog>(TIERS);
+
+  useEffect(() => {
+    api<TierSeed[]>('/catalog/tiers')
+      .then((tiers) => {
+        const record = Object.fromEntries(tiers.map((t) => [t.id, t])) as Catalog;
+        if (TIER_IDS.every((id) => record[id])) setCatalog(record);
+      })
+      .catch(() => {
+        /* API fora do ar: segue com o seed do pacote */
+      });
+  }, []);
 
   const stepRef = useRef<HTMLElement>(null);
   const prevScreen = useRef(state.screen);
@@ -144,10 +161,10 @@ export function ChurrasApp() {
     };
     const adjustments: Adjustments = { edits: state.edits, prices: state.prices };
     const tierResults = Object.fromEntries(
-      TIER_IDS.map((tier) => [tier, calculate({ ...input, tier }, adjustments)]),
+      TIER_IDS.map((tier) => [tier, calculate({ ...input, tier }, adjustments, catalog)]),
     ) as Record<TierId, CalculationResult>;
     return { result: tierResults[state.tier], tierResults };
-  }, [state]);
+  }, [state, catalog]);
 
   const saveBarbecue = async (token: string) => {
     setSaving(true);
@@ -207,10 +224,10 @@ export function ChurrasApp() {
       <main key={state.screen} ref={stepRef} tabIndex={-1} className="step-enter outline-none">
       {state.screen === 'setup' && <SetupScreen state={state} result={result} dispatch={dispatch} />}
       {state.screen === 'tiers' && (
-        <TiersScreen state={state} result={result} tierResults={tierResults} dispatch={dispatch} />
+        <TiersScreen state={state} result={result} tierResults={tierResults} catalog={catalog} dispatch={dispatch} />
       )}
       {state.screen === 'edit' && (
-        <EditScreen state={state} result={result} dispatch={dispatch} onSave={onSaveClick} saving={saving} />
+        <EditScreen state={state} result={result} catalog={catalog} dispatch={dispatch} onSave={onSaveClick} saving={saving} />
       )}
       {state.screen === 'auth' && (
         <AuthScreen

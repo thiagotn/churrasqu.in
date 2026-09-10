@@ -64,6 +64,37 @@ model Rsvp {
   @@index([barbecueId])
 }
 
+// Catálogo de referência (fatia 8): fonte de runtime dos níveis/preços.
+// Seed idempotente a partir do TIERS de packages/calculator (prisma/seed.cjs).
+model CatalogTier {
+  id                 String        @id // basico | medio | gourmet
+  name               String
+  badge              String
+  priceLabel         String
+  pitch              String
+  charcoalName       String
+  charcoalPriceCents Int
+  sortOrder          Int
+  items              CatalogItem[]
+}
+
+model CatalogItem {
+  id             String      @id @default(cuid())
+  tier           CatalogTier @relation(fields: [tierId], references: [id], onDelete: Cascade)
+  tierId         String
+  kind           String // cut | side | optional
+  name           String
+  unitPriceCents Int
+  proportion     Float? // cut
+  unit           String? // side/optional
+  per            String? // side: adult | guest
+  factor         Float? // side
+  qty            Float? // optional
+  sortOrder      Int
+
+  @@unique([tierId, kind, name])
+}
+
 model BarbecueItem {
   id             String   @id @default(cuid())
   barbecue       Barbecue @relation(fields: [barbecueId], references: [id], onDelete: Cascade)

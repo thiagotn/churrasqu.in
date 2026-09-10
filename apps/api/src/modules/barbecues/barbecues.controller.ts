@@ -26,16 +26,16 @@ export class BarbecuesController {
 
   /** Público, sem salvar: lista resolvida + totais, e o total dos 3 níveis para a tela de escolha. */
   @Post('estimate')
-  estimate(@Body() dto: EstimateRequestDto) {
+  async estimate(@Body() dto: EstimateRequestDto) {
     if (dto.men + dto.women < 1) {
       throw new BadRequestException('O churras precisa de pelo menos 1 adulto.');
     }
     const { adjustments, ...input } = dto;
-    const result = this.calculator.estimate(input, adjustments);
-    const tierTotals = Object.fromEntries(
-      TIER_IDS.map((tier) => [tier, this.calculator.estimate({ ...input, tier }, adjustments).total]),
+    const result = await this.calculator.estimate(input, adjustments);
+    const totals = await Promise.all(
+      TIER_IDS.map(async (tier) => [tier, (await this.calculator.estimate({ ...input, tier }, adjustments)).total]),
     );
-    return { ...result, tierTotals };
+    return { ...result, tierTotals: Object.fromEntries(totals) };
   }
 
   @UseGuards(JwtAuthGuard)

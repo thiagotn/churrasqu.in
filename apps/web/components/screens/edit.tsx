@@ -1,6 +1,6 @@
 'use client';
 
-import { CalculationResult, Category, ListItem, TIERS } from '@churrasquin/calculator';
+import { CalculationResult, Catalog, Category, ListItem } from '@churrasquin/calculator';
 import { kgLabel, money } from '../../lib/format';
 import { Action, ChurrasState } from '../../lib/state';
 import { PriceInput, QtyInput, press } from '../ui';
@@ -80,12 +80,14 @@ function ItemRow({ item, dispatch }: { item: ListItem; dispatch: React.Dispatch<
 export function EditScreen({
   state,
   result,
+  catalog,
   dispatch,
   onSave,
   saving,
 }: {
   state: ChurrasState;
   result: CalculationResult;
+  catalog: Catalog;
   dispatch: React.Dispatch<Action>;
   onSave: () => void;
   saving: boolean;
@@ -98,7 +100,7 @@ export function EditScreen({
     <div className="flex flex-col gap-[clamp(16px,2.4vw,28px)] pb-24 md:pb-0">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <h1 className="font-display text-[clamp(32px,5vw,48px)] tracking-wide text-ink">
-          Lista {TIERS[state.tier].name}
+          Lista {catalog[state.tier].name}
         </h1>
         {hasAdjustments && (
           <button

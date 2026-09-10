@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { CalculationResult, TIERS, TIER_IDS, TierId, TierSeed } from '@churrasquin/calculator';
+import { CalculationResult, Catalog, TIER_IDS, TierId, TierSeed } from '@churrasquin/calculator';
 import { kgLabel, money, moneyRound } from '../../lib/format';
 import { Action, ChurrasState } from '../../lib/state';
 import { press } from '../ui';
@@ -80,11 +80,13 @@ export function TiersScreen({
   state,
   result,
   tierResults,
+  catalog,
   dispatch,
 }: {
   state: ChurrasState;
   result: CalculationResult;
   tierResults: Record<TierId, CalculationResult>;
+  catalog: Catalog;
   dispatch: React.Dispatch<Action>;
 }) {
   // Aba em foco no mobile (escolher mesmo é no CTA do card)
@@ -124,7 +126,7 @@ export function TiersScreen({
                 }`}
               >
                 <span className="font-display text-[16px] leading-none tracking-wide">
-                  {TIERS[tierId].name}
+                  {catalog[tierId].name}
                 </span>
                 <span className={`text-[12px] font-black ${selected ? 'text-mustard' : 'text-ember'}`}>
                   {moneyRound(tierResults[tierId].total)}
@@ -135,7 +137,7 @@ export function TiersScreen({
         </div>
         <div key={preview} className="step-enter mt-4">
           <TierCard
-            seed={TIERS[preview]}
+            seed={catalog[preview]}
             tierResult={tierResults[preview]}
             active={state.tier === preview}
             dispatch={dispatch}
@@ -148,7 +150,7 @@ export function TiersScreen({
         {TIER_IDS.map((tierId) => (
           <TierCard
             key={tierId}
-            seed={TIERS[tierId]}
+            seed={catalog[tierId]}
             tierResult={tierResults[tierId]}
             active={state.tier === tierId}
             dispatch={dispatch}

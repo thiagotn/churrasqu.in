@@ -20,8 +20,8 @@ export class BarbecuesService {
     private readonly calculator: CalculatorService,
   ) {}
 
-  /** Recalcula com o seed atual e congela o resultado como snapshot. */
-  private snapshot(dto: SaveBarbecueDto) {
+  /** Recalcula com o catálogo atual e congela o resultado como snapshot. */
+  private async snapshot(dto: SaveBarbecueDto) {
     if (dto.men + dto.women < 1) {
       throw new BadRequestException('O churras precisa de pelo menos 1 adulto.');
     }
@@ -30,7 +30,7 @@ export class BarbecuesService {
     if (pixType && pixKey && normalizePixKey(pixType, pixKey) === null) {
       throw new BadRequestException(`Chave Pix inválida para o tipo ${pixType}.`);
     }
-    const result = this.calculator.estimate(input, adjustments);
+    const result = await this.calculator.estimate(input, adjustments);
     return {
       totals: {
         totalCents: toCents(result.total),
@@ -99,7 +99,7 @@ export class BarbecuesService {
   }
 
   async create(ownerId: string, dto: SaveBarbecueDto) {
-    const { totals, items, event } = this.snapshot(dto);
+    const { totals, items, event } = await this.snapshot(dto);
     const slug = await this.uniqueSlug(dto.eventName);
     const barbecue = await this.prisma.barbecue.create({
       data: { ...event, ...totals, slug, ownerId, items: { create: items } },
@@ -154,7 +154,7 @@ export class BarbecuesService {
   /** Atualiza recalculando o snapshot inteiro (mesmo corpo do create; o slug não muda). */
   async update(ownerId: string, id: string, dto: SaveBarbecueDto) {
     await this.owned(ownerId, id);
-    const { totals, items, event } = this.snapshot(dto);
+    const { totals, items, event } = await this.snapshot(dto);
     const [, barbecue] = await this.prisma.$transaction([
       this.prisma.barbecueItem.deleteMany({ where: { barbecueId: id } }),
       this.prisma.barbecue.update({

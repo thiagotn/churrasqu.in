@@ -11,7 +11,8 @@
     "test:cov": "jest --coverage",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma:generate": "prisma generate",
-    "prisma:deploy": "prisma migrate deploy"
+    "prisma:deploy": "prisma migrate deploy",
+    "prisma:seed": "node prisma/seed.cjs"
   },
   "dependencies": {
     "@churrasquin/calculator": "*",
@@ -64,5 +65,8 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.cjs"
   }
 }

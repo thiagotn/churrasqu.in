@@ -29,6 +29,6 @@ npm run dev:api & npm run dev:web
 
 ## Notas
 
-- **Adiado:** migrar o seed do catálogo para o banco. O seed segue em `packages/calculator` (ADR 0003/0004) até haver necessidade real de administrar preços; quando entrar, vira tabela + seed do Prisma e o `calculate` ganha catálogo injetável.
+- ~~Adiado: migrar o seed do catálogo para o banco~~ — **feito na fatia 8** (ADR 0006): tabela + seed idempotente + `calculate` com catálogo injetável.
 - Não há módulo `users` separado: o modelo `User` é pequeno e vive no `auth`; separa-se quando ganhar perfil/preferências.
 - A tela "Churras salvo!" é um recorte da tela 5 — QR, Pix e dados do evento completam na fatia 4.

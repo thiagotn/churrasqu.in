@@ -1,4 +1,6 @@
 import { Test } from '@nestjs/testing';
+import { TIERS } from '@churrasquin/calculator';
+import { CatalogService } from '../catalog/catalog.service';
 import { CalculatorModule } from './calculator.module';
 import { CalculatorService } from './calculator.service';
 
@@ -8,12 +10,16 @@ describe('CalculatorService (módulo Nest)', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [CalculatorModule],
-    }).compile();
+    })
+      // unidade não toca banco: catálogo vem do seed do pacote
+      .overrideProvider(CatalogService)
+      .useValue({ record: async () => TIERS })
+      .compile();
     service = moduleRef.get(CalculatorService);
   });
 
-  it('estima um churras completo', () => {
-    const result = service.estimate({
+  it('estima um churras completo', async () => {
+    const result = await service.estimate({
       men: 6,
       women: 5,
       kids: 3,
