@@ -1,6 +1,6 @@
 # Roadmap de fatias
 
-> Fatias 0–8: **todas `DONE`**. Deploy real no repo `homelab` (`helm/apps/churrasquin/`, ADR 0008 de lá); esteira: push na main → CI → imagens GHCR → write-back no homelab → Argo.
+> Fatias 0–9: **todas `DONE`**. Deploy real no repo `homelab` (`helm/apps/churrasquin/`, ADR 0008 de lá); esteira: push na main → CI → imagens GHCR → write-back no homelab → Argo.
 
 | # | Fatia | Status | Doc | Entrega |
 |---|---|---|---|---|
@@ -13,6 +13,7 @@
 | 6 | Docker + manifests k8s (homelab) | `DONE` | [slices/06-deploy-k8s.md](./slices/06-deploy-k8s.md) | Dockerfiles multi-stage, manifests, probes, migrations |
 | 7 | Painel "Meus churras" + quem pagou | `DONE` | [slices/07-meus-churras.md](./slices/07-meus-churras.md) | /meus, cobranças, retomar edição, toggle público |
 | 8 | Catálogo no banco (seed) | `DONE` | [slices/08-catalogo-no-banco.md](./slices/08-catalogo-no-banco.md) | Preços de referência no Postgres, seed idempotente, fallback |
+| 9 | PWA (instalável + offline) | `DONE` | [slices/09-pwa.md](./slices/09-pwa.md) | Manifest, ícones, service worker (Serwist), página offline |
 
 ## Regras de atualização
 

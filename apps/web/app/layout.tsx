@@ -30,6 +30,12 @@ export const metadata: Metadata = {
   },
   description: DESCRIPTION,
   icons: { icon: '/assets/logo.png' },
+  // PWA instalado (iOS lê daqui; Android lê do manifest)
+  appleWebApp: {
+    capable: true,
+    title: 'churrasqu.in',
+    statusBarStyle: 'default',
+  },
   // Preview de link (WhatsApp/Telegram/redes usam Open Graph)
   openGraph: {
     type: 'website',
