@@ -28,7 +28,7 @@ interface SavedBarbecue {
 // celular volta um passo) sem tocar no history.state interno do App Router do Next.
 const HASH_OF: Record<Screen, string> = {
   setup: 'convidados',
-  tiers: 'nivel',
+  tiers: 'padrao',
   edit: 'lista',
   auth: 'conta',
   saved: 'compartilhar',

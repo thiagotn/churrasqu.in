@@ -1,3 +1,7 @@
+/** Sem centavos — para rótulos compactos (abas de padrão no mobile). */
+export const moneyRound = (v: number): string =>
+  'R$ ' + Math.round(v || 0).toLocaleString('pt-BR');
+
 export const money = (v: number): string =>
   'R$ ' + (v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 

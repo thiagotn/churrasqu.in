@@ -4,7 +4,7 @@ import { Screen, STEP_OF_SCREEN } from '../lib/state';
 
 const STEPS: { step: number; label: string; screen: Screen }[] = [
   { step: 1, label: '1 · Convidados', screen: 'setup' },
-  { step: 2, label: '2 · Nível', screen: 'tiers' },
+  { step: 2, label: '2 · Padrão', screen: 'tiers' },
   { step: 3, label: '3 · Lista', screen: 'edit' },
   { step: 4, label: '4 · Compartilhar', screen: 'saved' },
 ];

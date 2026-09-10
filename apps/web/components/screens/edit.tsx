@@ -182,7 +182,7 @@ export function EditScreen({
             onClick={() => dispatch({ type: 'go', screen: 'tiers' })}
             className={`rounded-full border-[3px] border-ink bg-paper px-4 py-2 text-[14px] font-extrabold text-ink shadow-comic-3 hover:bg-mustard ${press}`}
           >
-            ← Trocar nível da lista
+            ← Trocar padrão da lista
           </button>
           <p className="text-[13px] font-bold text-muted">
             Salvar exige uma conta rapidinha — é o que garante que o link do seu churras continue no ar.

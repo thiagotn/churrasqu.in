@@ -20,7 +20,7 @@ export const viewport: Viewport = {
 };
 
 const DESCRIPTION =
-  'Monte o churras e divida a conta: lista de compras por nível ($, $$, $$$), link de convite com QR Code e Pix para o rateio. Ninguém paga a mais. Ninguém passa fome.';
+  'Monte o churras e divida a conta: lista de compras por padrão ($, $$, $$$), link de convite com QR Code e Pix para o rateio. Ninguém paga a mais. Ninguém passa fome.';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://churrasqu.in'),
