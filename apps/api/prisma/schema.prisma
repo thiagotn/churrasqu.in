@@ -37,6 +37,8 @@ model Barbecue {
   meatListKg    Float
   pixType      String?
   pixKey       String?
+  // organizador escolhe exibir quem pagou na página pública (default: só ele vê)
+  showPaidPublicly Boolean @default(false)
   owner        User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId      String
   items        BarbecueItem[]
@@ -51,6 +53,9 @@ model Rsvp {
   barbecueId String
   guestName  String
   response   String // vou | levo-alguem | nao-vou
+  // marcado pelo organizador no painel de cobranças
+  paid       Boolean  @default(false)
+  paidAt     DateTime?
   // segredo devolvido ao convidado para editar a própria resposta (sem conta)
   token      String   @unique
   createdAt  DateTime @default(now())

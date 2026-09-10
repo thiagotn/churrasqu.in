@@ -19,9 +19,13 @@ const BENEFITS = [
 export function AuthScreen({
   onAuthed,
   onBack,
+  backLabel = '← Voltar para a lista',
+  submitSuffix = ' e salvar',
 }: {
   onAuthed: (name: string, token: string) => void;
   onBack: () => void;
+  backLabel?: string;
+  submitSuffix?: string;
 }) {
   const [tab, setTab] = useState<'signup' | 'login'>('signup');
   const [name, setName] = useState('');
@@ -122,12 +126,12 @@ export function AuthScreen({
             disabled={busy}
             className={`border-4 border-ink bg-brand-sky px-6 py-3 font-display text-[clamp(22px,3vw,28px)] tracking-wide text-paper shadow-comic-7 disabled:opacity-60 ${press}`}
           >
-            {busy ? 'Um instante…' : tab === 'signup' ? 'Criar conta e salvar' : 'Entrar e salvar'}
+            {busy ? 'Um instante…' : `${tab === 'signup' ? 'Criar conta' : 'Entrar'}${submitSuffix}`}
           </button>
         </form>
 
         <button onClick={onBack} className="self-start text-[14px] font-extrabold text-ember underline">
-          ← Voltar para a lista
+          {backLabel}
         </button>
       </section>
 

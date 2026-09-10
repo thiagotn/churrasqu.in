@@ -14,6 +14,7 @@ import { AuthedRequest, JwtAuthGuard } from '../auth/auth.guard';
 import { CalculatorService } from '../calculator/calculator.service';
 import { BarbecuesService } from './barbecues.service';
 import { EstimateRequestDto } from './dto/estimate.dto';
+import { PaidVisibilityDto, RsvpPaidDto } from './dto/paid.dto';
 import { SaveBarbecueDto } from './dto/save-barbecue.dto';
 
 @Controller('barbecues')
@@ -59,5 +60,22 @@ export class BarbecuesController {
   @Patch(':id')
   update(@Req() req: AuthedRequest, @Param('id') id: string, @Body() dto: SaveBarbecueDto) {
     return this.barbecues.update(req.user.sub, id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id/rsvps/:rsvpId')
+  setRsvpPaid(
+    @Req() req: AuthedRequest,
+    @Param('id') id: string,
+    @Param('rsvpId') rsvpId: string,
+    @Body() dto: RsvpPaidDto,
+  ) {
+    return this.barbecues.setRsvpPaid(req.user.sub, id, rsvpId, dto.paid);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id/paid-visibility')
+  setPaidVisibility(@Req() req: AuthedRequest, @Param('id') id: string, @Body() dto: PaidVisibilityDto) {
+    return this.barbecues.setPaidVisibility(req.user.sub, id, dto.showPaidPublicly);
   }
 }

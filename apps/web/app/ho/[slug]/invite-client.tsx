@@ -24,6 +24,7 @@ interface Invite {
   organizer: string;
   categories: { category: string; items: string[] }[];
   confirmed: string[];
+  confirmedDetailed?: { name: string; paid: boolean }[];
   pix: { type: string; key: string; payload: string } | null;
 }
 
@@ -251,14 +252,23 @@ export function InviteClient({ slug }: { slug: string }) {
                 {invite.confirmed.length === 0 && (
                   <span className="text-[14px] font-bold text-muted">Ninguém ainda — seja a primeira pessoa!</span>
                 )}
-                {invite.confirmed.map((name, i) => (
-                  <span
-                    key={`${name}-${i}`}
-                    className="rounded-full border-[3px] border-ink bg-cream px-3 py-[7px] text-[14px] font-extrabold text-ink"
-                  >
-                    {name}
-                  </span>
-                ))}
+                {(invite.confirmedDetailed ?? invite.confirmed.map((name) => ({ name, paid: false }))).map(
+                  (guest, i) => (
+                    <span
+                      key={`${guest.name}-${i}`}
+                      className={`flex items-center gap-1 rounded-full border-[3px] border-ink px-3 py-[7px] text-[14px] font-extrabold text-ink ${
+                        invite.confirmedDetailed && guest.paid ? 'bg-mustard' : 'bg-cream'
+                      }`}
+                    >
+                      {guest.name}
+                      {invite.confirmedDetailed && guest.paid && (
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#17130F" strokeWidth="3" strokeLinecap="square">
+                          <path d="M2 9 L6 13 L14 3" />
+                        </svg>
+                      )}
+                    </span>
+                  ),
+                )}
               </div>
             </section>
           </div>

@@ -34,12 +34,15 @@ export class RsvpService {
     return { token: created.token, name: created.guestName, response: created.response };
   }
 
-  /** Pills de confirmados para a página pública (quem vai; +1 marcado). */
-  async confirmed(barbecueId: string): Promise<string[]> {
+  /** Pills de confirmados para a página pública (quem vai; +1 marcado; paid p/ quando o organizador exibe). */
+  async confirmed(barbecueId: string): Promise<{ name: string; paid: boolean }[]> {
     const rows = await this.prisma.rsvp.findMany({
       where: { barbecueId, response: { in: ['vou', 'levo-alguem'] } },
       orderBy: { createdAt: 'asc' },
     });
-    return rows.map((r) => (r.response === 'levo-alguem' ? `${r.guestName} (+1)` : r.guestName));
+    return rows.map((r) => ({
+      name: r.response === 'levo-alguem' ? `${r.guestName} (+1)` : r.guestName,
+      paid: r.paid,
+    }));
   }
 }

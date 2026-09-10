@@ -1,4 +1,5 @@
 import {
+  adjustmentsFromSnapshot,
   applyAdjustments,
   buildBaseList,
   calculate,
@@ -239,6 +240,42 @@ describe('applyAdjustments', () => {
 
   it('sem ajustes, devolve a lista intacta', () => {
     expect(applyAdjustments(base)).toEqual(base);
+  });
+});
+
+describe('adjustmentsFromSnapshot — retomar edição', () => {
+  const adjustments = {
+    edits: {
+      'medio-picanha': null, // removido
+      'medio-costela-bovina': 3, // qty editada
+      'medio-tabua-de-frios': 1, // opcional ativado
+    },
+    prices: { 'medio-cerveja-long-neck-355ml': 5.5 }, // preço editado
+  };
+
+  it('roundtrip: snapshot → ajustes → mesma lista e total', () => {
+    const original = calculate(defaults, adjustments);
+    const snapshot = original.items
+      .filter((i) => i.on)
+      .map((i) => ({ itemId: i.id, qty: i.qty, unitPrice: i.unitPrice }));
+
+    const rebuilt = adjustmentsFromSnapshot(defaults, snapshot);
+    const restored = calculate(defaults, rebuilt);
+
+    expect(restored.total).toBeCloseTo(original.total, 2);
+    const activeOf = (r: typeof original) =>
+      r.items.filter((i) => i.on).map((i) => `${i.id}:${i.qty}:${i.unitPrice}`).sort();
+    expect(activeOf(restored)).toEqual(activeOf(original));
+  });
+
+  it('sem ajustes, snapshot da lista base reconstrói ajustes vazios ou neutros', () => {
+    const original = calculate(defaults);
+    const snapshot = original.items
+      .filter((i) => i.on)
+      .map((i) => ({ itemId: i.id, qty: i.qty, unitPrice: i.unitPrice }));
+    const rebuilt = adjustmentsFromSnapshot(defaults, snapshot);
+    expect(Object.keys(rebuilt.prices ?? {})).toHaveLength(0);
+    expect(calculate(defaults, rebuilt).total).toBeCloseTo(original.total, 2);
   });
 });
 

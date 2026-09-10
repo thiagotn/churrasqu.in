@@ -30,6 +30,7 @@ export class SharingService {
     })).filter((c) => c.items.length > 0);
 
     const pixKey = b.pixType && b.pixKey ? normalizePixKey(b.pixType as PixKeyType, b.pixKey) : null;
+    const confirmedList = await this.rsvp.confirmed(b.id);
 
     return {
       slug: b.slug,
@@ -48,7 +49,9 @@ export class SharingService {
       perAdult: b.perAdultCents / 100,
       organizer: b.owner.name,
       categories,
-      confirmed: await this.rsvp.confirmed(b.id),
+      confirmed: confirmedList.map((c) => c.name),
+      // organizador opta por exibir quem pagou no convite (default: oculto)
+      confirmedDetailed: b.showPaidPublicly ? confirmedList : undefined,
       pix: pixKey ? { type: b.pixType, key: pixKey, payload: this.payloadFor(b, pixKey) } : null,
     };
   }

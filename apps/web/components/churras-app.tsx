@@ -7,6 +7,7 @@ import {
   CalculatorInput,
   TIER_IDS,
   TierId,
+  adjustmentsFromSnapshot,
   calculate,
 } from '@churrasquin/calculator';
 import { ApiError, api, session } from '../lib/api';
@@ -51,6 +52,54 @@ export function ChurrasApp() {
   useEffect(() => {
     const current = session.get();
     if (current) dispatch({ type: 'patch', patch: { loggedIn: true, userName: current.name } });
+  }, []);
+
+  // "Editar lista" no painel /meus: reconstrói o wizard a partir do snapshot salvo
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem('churrasquin.resume');
+      if (!raw) return;
+      sessionStorage.removeItem('churrasquin.resume');
+      const saved = JSON.parse(raw);
+      const input: CalculatorInput = {
+        men: saved.men,
+        women: saved.women,
+        kids: saved.kids,
+        startTime: saved.startTime,
+        endTime: saved.endTime,
+        alcoholMode: saved.alcoholMode,
+        tier: saved.tier,
+      };
+      const adjustments = adjustmentsFromSnapshot(
+        input,
+        (saved.items ?? []).map((i: { itemId: string; qty: number; unitPrice: number }) => ({
+          itemId: i.itemId,
+          qty: i.qty,
+          unitPrice: i.unitPrice,
+        })),
+      );
+      dispatch({
+        type: 'patch',
+        patch: {
+          ...input,
+          eventName: saved.eventName,
+          eventDay: saved.eventDay,
+          eventAddress: saved.eventAddress,
+          eventCity: saved.eventCity,
+          eventHint: saved.eventHint ?? '',
+          pixType: saved.pixType ?? 'Celular',
+          pixKey: saved.pixKey ?? '',
+          edits: adjustments.edits ?? {},
+          prices: adjustments.prices ?? {},
+          savedId: saved.id,
+          savedSlug: saved.slug,
+          screen: 'edit',
+          maxStep: 4,
+        },
+      });
+    } catch {
+      /* payload inválido: segue no fluxo normal */
+    }
   }, []);
 
   // Botão voltar do celular navega entre os passos em vez de sair do site.

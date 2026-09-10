@@ -1,6 +1,6 @@
 # Roadmap de fatias
 
-> Fatias 0–6: **todas `DONE`**. O deploy real vive no repo `homelab` (`helm/apps/churrasquin/`, ADR 0008 de lá; ver nota na fatia 6). Repo publicado em `github.com/thiagotn/churrasqu.in` com CI (`.github/workflows/`): testes em PR, e em main testes → imagens GHCR → write-back de tag no homelab. Próximas candidatas (a priorizar): painel "meus churras" + quem pagou; seed do catálogo no banco (adiado na fatia 3).
+> Fatia atual: **8 — Catálogo no banco** (`WIP`). Fatias 0–7 `DONE`. Deploy real no repo `homelab` (`helm/apps/churrasquin/`, ADR 0008 de lá); esteira: push na main → CI → imagens GHCR → write-back no homelab → Argo.
 
 | # | Fatia | Status | Doc | Entrega |
 |---|---|---|---|---|
@@ -11,6 +11,8 @@
 | 4 | Sharing: slug, link público, QR Code, Pix | `DONE` | [slices/04-sharing.md](./slices/04-sharing.md) | Telas 4–6, payload Pix EMV, página pública |
 | 5 | RSVP na página pública | `DONE` | [slices/05-rsvp.md](./slices/05-rsvp.md) | Confirmação de presença + lista de confirmados |
 | 6 | Docker + manifests k8s (homelab) | `DONE` | [slices/06-deploy-k8s.md](./slices/06-deploy-k8s.md) | Dockerfiles multi-stage, manifests, probes, migrations |
+| 7 | Painel "Meus churras" + quem pagou | `DONE` | [slices/07-meus-churras.md](./slices/07-meus-churras.md) | /meus, cobranças, retomar edição, toggle público |
+| 8 | Catálogo no banco (seed) | `WIP` | [slices/08-catalogo-no-banco.md](./slices/08-catalogo-no-banco.md) | Preços de referência no Postgres, seed idempotente, fallback |
 
 ## Regras de atualização
 

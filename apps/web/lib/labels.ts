@@ -15,6 +15,24 @@ export const PIX_PLACEHOLDER: Record<string, string> = {
 };
 
 const WEEKDAYS = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+const WEEKDAYS_SHORT = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
+
+/** '2026-09-19' → 'SÁB 19/09' (badge dos cards do painel) */
+export function shortDayLabel(isoDay: string): string {
+  const parts = String(isoDay ?? '').split('-');
+  if (parts.length !== 3) return 'A DEFINIR';
+  const date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+  if (Number.isNaN(date.getTime())) return 'A DEFINIR';
+  return `${WEEKDAYS_SHORT[date.getDay()]} ${parts[2]}/${parts[1]}`;
+}
+
+/** Data do evento já passou? (comparação por dia, local) */
+export function isPastDay(isoDay: string): boolean {
+  const parts = String(isoDay ?? '').split('-');
+  if (parts.length !== 3) return false;
+  const date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]), 23, 59, 59);
+  return date.getTime() < Date.now();
+}
 
 /** '2026-09-19' → 'Sábado, 19/09' */
 export function dayLabel(isoDay: string): string {

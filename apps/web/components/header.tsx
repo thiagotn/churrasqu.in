@@ -21,7 +21,15 @@ export function Header({ userName, onReset }: { userName: string | null; onReset
       </div>
       <div className="flex items-center gap-3">
         {userName && (
-          <div className="flex items-center gap-2 rounded-full border-[3px] border-ink bg-paper py-1 pl-1 pr-4 shadow-comic-3">
+          <a
+            href="/meus"
+            className={`rounded-full border-[3px] border-ink bg-mustard px-4 py-2 text-[14px] font-extrabold text-ink shadow-comic-3 ${press}`}
+          >
+            Meus churras
+          </a>
+        )}
+        {userName && (
+          <div className="hidden items-center gap-2 rounded-full border-[3px] border-ink bg-paper py-1 pl-1 pr-4 shadow-comic-3 sm:flex">
             <span className="flex h-[26px] w-[26px] items-center justify-center rounded-full bg-brand-sky font-display text-[15px] text-paper">
               {userName.charAt(0).toUpperCase()}
             </span>

@@ -185,6 +185,40 @@ export function applyAdjustments(items: ListItem[], adjustments?: Adjustments): 
   });
 }
 
+/** Item como persistido no snapshot de um churras salvo (subset relevante). */
+export interface SnapshotItem {
+  itemId: string;
+  qty: number;
+  unitPrice: number;
+}
+
+/**
+ * Reconstrói os ajustes do usuário a partir do snapshot salvo — o inverso do save.
+ * Compara a lista base do input com o snapshot pelos ids estáveis (ADR 0002):
+ * qty/preço diferentes viram edits/prices; item base ausente = removido; opcional
+ * presente = reativado. Itens do snapshot sem correspondente na base (catálogo
+ * mudou desde o save) não são reconstruíveis e ficam de fora.
+ */
+export function adjustmentsFromSnapshot(
+  input: CalculatorInput,
+  snapshot: SnapshotItem[],
+): Adjustments {
+  const base = buildBaseList(input);
+  const saved = new Map(snapshot.map((s) => [s.itemId, s]));
+  const edits: Record<string, number | null> = {};
+  const prices: Record<string, number> = {};
+  for (const item of base) {
+    const match = saved.get(item.id);
+    if (!match) {
+      if (item.on) edits[item.id] = null;
+      continue;
+    }
+    if (match.unitPrice !== item.unitPrice) prices[item.id] = match.unitPrice;
+    if (!item.on || match.qty !== item.qty) edits[item.id] = match.qty;
+  }
+  return { edits, prices };
+}
+
 export function calculate(input: CalculatorInput, adjustments?: Adjustments): CalculationResult {
   const items = applyAdjustments(buildBaseList(input), adjustments);
   const adults = input.men + input.women;

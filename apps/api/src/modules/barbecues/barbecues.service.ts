@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { makeShareSlug } from '@churrasquin/calculator';
-import { Barbecue, BarbecueItem } from '@prisma/client';
+import { Barbecue, BarbecueItem, Rsvp } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CalculatorService } from '../calculator/calculator.service';
 import { normalizePixKey } from '../sharing/pix';
@@ -9,7 +9,9 @@ import { SaveBarbecueDto } from './dto/save-barbecue.dto';
 const toCents = (v: number): number => Math.round(v * 100);
 const toReais = (cents: number): number => cents / 100;
 
-type BarbecueWithItems = Barbecue & { items: BarbecueItem[] };
+type BarbecueWithItems = Barbecue & { items: BarbecueItem[]; rsvps?: Rsvp[] };
+
+const CONFIRMED_RESPONSES = ['vou', 'levo-alguem'];
 
 @Injectable()
 export class BarbecuesService {
@@ -74,11 +76,21 @@ export class BarbecuesService {
   }
 
   private toApi(b: BarbecueWithItems) {
-    const { totalCents, perAdultCents, ownerId: _ownerId, items, ...rest } = b;
+    const { totalCents, perAdultCents, ownerId: _ownerId, items, rsvps, ...rest } = b;
+    const confirmed = (rsvps ?? []).filter((r) => CONFIRMED_RESPONSES.includes(r.response));
     return {
       ...rest,
       total: toReais(totalCents),
       perAdult: toReais(perAdultCents),
+      confirmedCount: confirmed.length,
+      paidCount: confirmed.filter((r) => r.paid).length,
+      rsvps: (rsvps ?? []).map((r) => ({
+        id: r.id,
+        guestName: r.guestName,
+        response: r.response,
+        paid: r.paid,
+        paidAt: r.paidAt,
+      })),
       items: items.map(({ unitPriceCents, barbecueId: _b, ...item }) => ({
         ...item,
         unitPrice: toReais(unitPriceCents),
@@ -91,7 +103,7 @@ export class BarbecuesService {
     const slug = await this.uniqueSlug(dto.eventName);
     const barbecue = await this.prisma.barbecue.create({
       data: { ...event, ...totals, slug, ownerId, items: { create: items } },
-      include: { items: true },
+      include: { items: true, rsvps: true },
     });
     return this.toApi(barbecue);
   }
@@ -100,17 +112,39 @@ export class BarbecuesService {
     const rows = await this.prisma.barbecue.findMany({
       where: { ownerId },
       orderBy: { createdAt: 'desc' },
-      include: { items: true },
+      include: { items: true, rsvps: { orderBy: { createdAt: 'asc' } } },
     });
     return rows.map((b) => this.toApi(b));
   }
 
   private async owned(ownerId: string, id: string): Promise<BarbecueWithItems> {
-    const barbecue = await this.prisma.barbecue.findUnique({ where: { id }, include: { items: true } });
+    const barbecue = await this.prisma.barbecue.findUnique({
+      where: { id },
+      include: { items: true, rsvps: { orderBy: { createdAt: 'asc' } } },
+    });
     if (!barbecue || barbecue.ownerId !== ownerId) {
       throw new NotFoundException('Churras não encontrado');
     }
     return barbecue;
+  }
+
+  /** Organizador marca/desmarca o pagamento de um convidado. */
+  async setRsvpPaid(ownerId: string, barbecueId: string, rsvpId: string, paid: boolean) {
+    const barbecue = await this.owned(ownerId, barbecueId);
+    const rsvp = (barbecue.rsvps ?? []).find((r) => r.id === rsvpId);
+    if (!rsvp) throw new NotFoundException('Convidado não encontrado neste churras');
+    await this.prisma.rsvp.update({
+      where: { id: rsvpId },
+      data: { paid, paidAt: paid ? new Date() : null },
+    });
+    return this.toApi(await this.owned(ownerId, barbecueId));
+  }
+
+  /** Organizador escolhe exibir (ou não) quem pagou na página pública. */
+  async setPaidVisibility(ownerId: string, barbecueId: string, showPaidPublicly: boolean) {
+    await this.owned(ownerId, barbecueId);
+    await this.prisma.barbecue.update({ where: { id: barbecueId }, data: { showPaidPublicly } });
+    return this.toApi(await this.owned(ownerId, barbecueId));
   }
 
   async get(ownerId: string, id: string) {
@@ -126,7 +160,7 @@ export class BarbecuesService {
       this.prisma.barbecue.update({
         where: { id },
         data: { ...event, ...totals, items: { create: items } },
-        include: { items: true },
+        include: { items: true, rsvps: { orderBy: { createdAt: 'asc' } } },
       }),
     ]);
     return this.toApi(barbecue);
