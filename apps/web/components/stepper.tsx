@@ -1,29 +1,38 @@
 'use client';
 
-import { Screen, STEP_OF_SCREEN } from '../lib/state';
+import { Branch, Screen, STEP_OF_SCREEN } from '../lib/state';
 
-const STEPS: { step: number; label: string; screen: Screen }[] = [
-  { step: 1, label: '1 · Convidados', screen: 'setup' },
-  { step: 2, label: '2 · Padrão', screen: 'tiers' },
-  { step: 3, label: '3 · Lista', screen: 'edit' },
-  { step: 4, label: '4 · Compartilhar', screen: 'saved' },
-];
+const STEP4_LABEL: Record<Branch, string> = {
+  quote: '4 · Orçamento',
+  invite: '4 · Convidar',
+};
 
 export function Stepper({
   screen,
   maxStep,
+  branch,
+  step4Target,
   onGo,
 }: {
   screen: Screen;
   maxStep: number;
+  branch: Branch | null;
+  /** Tela aberta pelo passo 4 (depende do caminho escolhido depois da lista) */
+  step4Target: Screen;
   onGo: (screen: Screen) => void;
 }) {
   const current = STEP_OF_SCREEN[screen];
+  const steps: { step: number; label: string; screen: Screen }[] = [
+    { step: 1, label: '1 · Convidados', screen: 'setup' },
+    { step: 2, label: '2 · Padrão', screen: 'tiers' },
+    { step: 3, label: '3 · Lista', screen: 'edit' },
+    { step: 4, label: STEP4_LABEL[branch ?? 'quote'], screen: step4Target },
+  ];
   return (
     <nav className="flex flex-wrap gap-3">
-      {STEPS.map(({ step, label, screen: target }) => {
+      {steps.map(({ step, label, screen: target }) => {
         const state = step === current ? 'current' : step < current ? 'done' : 'future';
-        // Navegável só para trás ou até onde o usuário já chegou (a etapa 4 abre depois de salvar)
+        // Navegável só para trás ou até onde o usuário já chegou
         const clickable = step !== current && step <= maxStep;
         const palette =
           state === 'current'

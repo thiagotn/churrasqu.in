@@ -14,11 +14,14 @@ import {
   calculate,
 } from '@churrasquin/calculator';
 import { ApiError, api, session } from '../lib/api';
-import { STEP_OF_SCREEN, Screen, initialState, reducer } from '../lib/state';
+import { Screen, canOpen, initialState, reducer, step4Screen } from '../lib/state';
 import { Header } from './header';
 import { Stepper } from './stepper';
 import { AuthScreen } from './screens/auth';
 import { EditScreen } from './screens/edit';
+import { EventScreen } from './screens/event';
+import { QuoteScreen } from './screens/quote';
+import { QuoteSentScreen } from './screens/quote-sent';
 import { SetupScreen } from './screens/setup';
 import { ShareScreen } from './screens/share';
 import { TiersScreen } from './screens/tiers';
@@ -34,6 +37,9 @@ const HASH_OF: Record<Screen, string> = {
   setup: 'convidados',
   tiers: 'padrao',
   edit: 'lista',
+  quote: 'orcamento',
+  quoteSent: 'orcamento-enviado',
+  event: 'evento',
   auth: 'conta',
   saved: 'compartilhar',
 };
@@ -63,8 +69,8 @@ export function ChurrasApp() {
   const stepRef = useRef<HTMLElement>(null);
   const prevScreen = useRef(state.screen);
   const cameFromHistory = useRef(false);
-  const maxStepRef = useRef(state.maxStep);
-  maxStepRef.current = state.maxStep;
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
   useEffect(() => {
     const current = session.get();
@@ -110,6 +116,7 @@ export function ChurrasApp() {
           prices: adjustments.prices ?? {},
           savedId: saved.id,
           savedSlug: saved.slug,
+          branch: 'invite',
           screen: 'edit',
           maxStep: 4,
         },
@@ -129,7 +136,7 @@ export function ChurrasApp() {
       const target = SCREEN_OF[window.location.hash.slice(1)];
       if (!target || target === prevScreen.current) return;
       // não deixa o hash pular além do progresso alcançado
-      if (STEP_OF_SCREEN[target] > maxStepRef.current) return;
+      if (!canOpen(stateRef.current, target)) return;
       cameFromHistory.current = true;
       dispatch({ type: 'patch', patch: { screen: target } });
     };
@@ -214,7 +221,13 @@ export function ChurrasApp() {
   return (
     <div className="mx-auto flex min-h-screen max-w-[1200px] flex-col gap-[clamp(16px,2.4vw,28px)] px-[clamp(12px,3vw,40px)] pb-20 pt-[clamp(14px,3vw,36px)]">
       <Header userName={state.loggedIn ? state.userName : null} onReset={() => dispatch({ type: 'reset' })} />
-      <Stepper screen={state.screen} maxStep={state.maxStep} onGo={(screen) => dispatch({ type: 'go', screen })} />
+      <Stepper
+        screen={state.screen}
+        maxStep={state.maxStep}
+        branch={state.branch}
+        step4Target={step4Screen(state)}
+        onGo={(screen) => dispatch({ type: 'go', screen })}
+      />
 
       {saveError && (
         <p className="border-[3px] border-ember bg-paper p-3 text-[13px] font-black text-ember">{saveError}</p>
@@ -227,7 +240,24 @@ export function ChurrasApp() {
         <TiersScreen state={state} result={result} tierResults={tierResults} catalog={catalog} dispatch={dispatch} />
       )}
       {state.screen === 'edit' && (
-        <EditScreen state={state} result={result} catalog={catalog} dispatch={dispatch} onSave={onSaveClick} saving={saving} />
+        <EditScreen
+          state={state}
+          result={result}
+          catalog={catalog}
+          dispatch={dispatch}
+          // já salvo (retomado do /meus): atualiza direto; senão pede os dados do evento
+          onInvite={() => (state.savedId ? onSaveClick() : dispatch({ type: 'go', screen: 'event' }))}
+          saving={saving}
+        />
+      )}
+      {state.screen === 'quote' && (
+        <QuoteScreen state={state} result={result} tierName={catalog[state.tier].name} dispatch={dispatch} />
+      )}
+      {state.screen === 'quoteSent' && (
+        <QuoteSentScreen state={state} result={result} tierName={catalog[state.tier].name} dispatch={dispatch} />
+      )}
+      {state.screen === 'event' && (
+        <EventScreen state={state} result={result} dispatch={dispatch} onSave={onSaveClick} saving={saving} />
       )}
       {state.screen === 'auth' && (
         <AuthScreen
@@ -235,7 +265,8 @@ export function ChurrasApp() {
             dispatch({ type: 'patch', patch: { loggedIn: true, userName: name } });
             void saveBarbecue(token);
           }}
-          onBack={() => dispatch({ type: 'go', screen: 'edit' })}
+          onBack={() => dispatch({ type: 'go', screen: 'event' })}
+          backLabel="← Voltar para os dados do churras"
         />
       )}
       {state.screen === 'saved' && (

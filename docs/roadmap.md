@@ -1,6 +1,6 @@
 # Roadmap de fatias
 
-> Fatias 0–9: **todas `DONE`**. Deploy real no repo `homelab` (`helm/apps/churrasquin/`, ADR 0008 de lá); esteira: push na main → CI → imagens GHCR → write-back no homelab → Argo.
+> Fatias 0–10: **todas `DONE`**. Deploy real no repo `homelab` (`helm/apps/churrasquin/`, ADR 0008 de lá); esteira: push na main → CI → imagens GHCR → write-back no homelab → Argo.
 
 | # | Fatia | Status | Doc | Entrega |
 |---|---|---|---|---|
@@ -14,6 +14,7 @@
 | 7 | Painel "Meus churras" + quem pagou | `DONE` | [slices/07-meus-churras.md](./slices/07-meus-churras.md) | /meus, cobranças, retomar edição, toggle público |
 | 8 | Catálogo no banco (seed) | `DONE` | [slices/08-catalogo-no-banco.md](./slices/08-catalogo-no-banco.md) | Preços de referência no Postgres, seed idempotente, fallback |
 | 9 | PWA (instalável + offline) | `DONE` | [slices/09-pwa.md](./slices/09-pwa.md) | Manifest, ícones, service worker (Serwist), página offline |
+| 10 | Calculadora primeiro + pedido de orçamento a açougues | `DONE` | [slices/10-orcamentos.md](./slices/10-orcamentos.md) | Tela 1 sem local/data/hora, lead anônimo via WhatsApp, convite vira caminho secundário |
 
 ## Regras de atualização
 

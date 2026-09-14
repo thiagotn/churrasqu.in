@@ -6,7 +6,6 @@ import { CalculatorService } from '../calculator/calculator.service';
 import { normalizePixKey } from '../sharing/pix';
 import { SaveBarbecueDto } from './dto/save-barbecue.dto';
 
-const toCents = (v: number): number => Math.round(v * 100);
 const toReais = (cents: number): number => cents / 100;
 
 type BarbecueWithItems = Barbecue & { items: BarbecueItem[]; rsvps?: Rsvp[] };
@@ -30,23 +29,10 @@ export class BarbecuesService {
     if (pixType && pixKey && normalizePixKey(pixType, pixKey) === null) {
       throw new BadRequestException(`Chave Pix inválida para o tipo ${pixType}.`);
     }
-    const result = await this.calculator.estimate(input, adjustments);
+    const { totals, items } = await this.calculator.snapshot(input, adjustments);
     return {
-      totals: {
-        totalCents: toCents(result.total),
-        perAdultCents: toCents(result.perAdult),
-        meatListKg: result.meatListKg,
-      },
-      items: result.items
-        .filter((i) => i.on)
-        .map((i) => ({
-          itemId: i.id,
-          name: i.name,
-          category: i.category,
-          unit: i.unit,
-          qty: i.qty,
-          unitPriceCents: toCents(i.unitPrice),
-        })),
+      totals,
+      items,
       event: {
         eventName,
         eventDay,

@@ -1,5 +1,7 @@
 // Payload Pix EMV (BR Code) — Manual de Padrões para Iniciação do Pix (BCB)
 
+import { normalizeBrPhone } from '../../common/phone';
+
 export type PixKeyType = 'Celular' | 'CPF' | 'E-mail' | 'Aleatória';
 
 export const PIX_KEY_TYPES: PixKeyType[] = ['Celular', 'CPF', 'E-mail', 'Aleatória'];
@@ -7,11 +9,8 @@ export const PIX_KEY_TYPES: PixKeyType[] = ['Celular', 'CPF', 'E-mail', 'Aleató
 /** Normaliza a chave por tipo; null = inválida. */
 export function normalizePixKey(type: PixKeyType, key: string): string | null {
   switch (type) {
-    case 'Celular': {
-      const digits = key.replace(/\D/g, '');
-      const withCountry = digits.startsWith('55') && digits.length > 11 ? digits : `55${digits}`;
-      return /^55[1-9]\d{9,10}$/.test(withCountry) ? `+${withCountry}` : null;
-    }
+    case 'Celular':
+      return normalizeBrPhone(key);
     case 'CPF': {
       const digits = key.replace(/\D/g, '');
       return digits.length === 11 ? digits : null;

@@ -6,6 +6,7 @@ import { API_BASE } from '../../lib/api';
 import { money } from '../../lib/format';
 import { PIX_PLACEHOLDER } from '../../lib/labels';
 import { Action, ChurrasState } from '../../lib/state';
+import { EventFields } from '../event-fields';
 import { FieldLabel, inputCls, press } from '../ui';
 
 const PIX_TYPES = ['Celular', 'CPF', 'E-mail', 'Aleatória'] as const;
@@ -89,34 +90,7 @@ export function ShareScreen({
             <FieldLabel>Nome do churras</FieldLabel>
             <input className={inputCls} value={state.eventName} onChange={(e) => patch({ eventName: e.target.value })} />
           </label>
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,90px),1fr))] gap-2">
-            <label className="grid grid-cols-[minmax(0,1fr)] gap-1">
-              <FieldLabel>Data</FieldLabel>
-              <input type="date" className={inputCls} value={state.eventDay} onChange={(e) => patch({ eventDay: e.target.value })} />
-            </label>
-            <label className="grid grid-cols-[minmax(0,1fr)] gap-1">
-              <FieldLabel>Começa</FieldLabel>
-              <input type="time" className={inputCls} value={state.startTime} onChange={(e) => patch({ startTime: e.target.value })} />
-            </label>
-            <label className="grid grid-cols-[minmax(0,1fr)] gap-1">
-              <FieldLabel>Termina</FieldLabel>
-              <input type="time" className={inputCls} value={state.endTime} onChange={(e) => patch({ endTime: e.target.value })} />
-            </label>
-          </div>
-          <label className="grid grid-cols-[minmax(0,1fr)] gap-1">
-            <FieldLabel>Endereço</FieldLabel>
-            <input className={inputCls} value={state.eventAddress} onChange={(e) => patch({ eventAddress: e.target.value })} />
-          </label>
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,120px),1fr))] gap-2">
-            <label className="grid grid-cols-[minmax(0,1fr)] gap-1">
-              <FieldLabel>Bairro</FieldLabel>
-              <input className={inputCls} value={state.eventCity} onChange={(e) => patch({ eventCity: e.target.value })} />
-            </label>
-            <label className="grid grid-cols-[minmax(0,1fr)] gap-1">
-              <FieldLabel>Referência</FieldLabel>
-              <input className={inputCls} value={state.eventHint} onChange={(e) => patch({ eventHint: e.target.value })} />
-            </label>
-          </div>
+          <EventFields state={state} patch={patch} withCep={false} />
           <button
             onClick={save}
             disabled={saving}

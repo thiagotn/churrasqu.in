@@ -108,3 +108,48 @@ model BarbecueItem {
 
   @@index([barbecueId])
 }
+
+// Pedido de orçamento (fatia 10): lead anônimo — sem conta, contato só pelo WhatsApp.
+// Distribuição aos açougues é manual por enquanto (status muda via psql).
+model QuoteRequest {
+  id           String             @id @default(cuid())
+  status       String             @default("novo") // novo | enviado | respondido | cancelado
+  contactName  String
+  whatsapp     String // E.164, ex.: +5511988881234
+  consent      Boolean
+  eventDay     String // ISO yyyy-mm-dd
+  startTime    String // HH:mm
+  endTime      String // HH:mm
+  cep          String // 8 dígitos
+  eventCity    String
+  eventAddress String             @default("")
+  eventHint    String             @default("")
+  alcoholMode  String
+  tier         String
+  men          Int
+  women        Int
+  kids         Int
+  // Totais de referência do snapshot, em centavos
+  totalCents   Int
+  meatListKg   Float
+  items        QuoteRequestItem[]
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@index([status, createdAt])
+  @@index([cep])
+}
+
+model QuoteRequestItem {
+  id             String       @id @default(cuid())
+  quoteRequest   QuoteRequest @relation(fields: [quoteRequestId], references: [id], onDelete: Cascade)
+  quoteRequestId String
+  itemId         String
+  name           String
+  category       String
+  unit           String
+  qty            Float
+  unitPriceCents Int
+
+  @@index([quoteRequestId])
+}

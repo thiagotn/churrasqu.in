@@ -33,6 +33,24 @@ describe('CalculatorService (módulo Nest)', () => {
     expect(result.perAdult).toBeCloseTo(result.total / 11, 2);
   });
 
+  it('congela snapshot em centavos só com itens ligados', async () => {
+    const input = {
+      men: 6,
+      women: 5,
+      kids: 3,
+      startTime: '12:00',
+      endTime: '18:00',
+      alcoholMode: 'lista' as const,
+      tier: 'medio' as const,
+    };
+    const result = await service.estimate(input);
+    const snap = await service.snapshot(input);
+    expect(snap.totals.totalCents).toBe(Math.round(result.total * 100));
+    expect(snap.totals.meatListKg).toBe(result.meatListKg);
+    expect(snap.items).toHaveLength(result.items.filter((i) => i.on).length);
+    expect(Number.isInteger(snap.items[0].unitPriceCents)).toBe(true);
+  });
+
   it('gera slug de compartilhamento', () => {
     expect(service.shareSlug('Churras da Laje')).toMatch(/^churras-da-laje-[0-9a-f]{4}$/);
   });

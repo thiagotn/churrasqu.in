@@ -100,7 +100,7 @@ export function TiersScreen({
             Escolha o padrão do churras
           </h1>
           <p className="text-[15px] font-extrabold text-muted">
-            {result.guests} convidados · {kgLabel(result.meatBaseKg)} de carne · {state.eventCity}
+            {result.guests} convidados · {kgLabel(result.meatBaseKg)} de carne
           </p>
         </div>
         <button

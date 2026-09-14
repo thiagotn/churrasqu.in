@@ -3,8 +3,17 @@
 import { AlcoholMode, CalculationResult } from '@churrasquin/calculator';
 import { hoursLabel, kgLabel } from '../../lib/format';
 import { ALCOHOL_NOTE } from '../../lib/labels';
-import { Action, ChurrasState } from '../../lib/state';
-import { FieldLabel, inputCls, press } from '../ui';
+import { Action, ChurrasState, durationOf, endTimeFor } from '../../lib/state';
+import { press } from '../ui';
+
+// Churras longo estica carne, gelo e carvão (stretchFor do pacote: 5h+ e 7h+)
+const DURATION_OPTIONS: { hours: number; title: string; hint: string }[] = [
+  { hours: 4, title: 'Até 4 horas', hint: 'Almoço rápido' },
+  { hours: 6, title: '5 a 6 horas', hint: 'A tarde toda' },
+  { hours: 8, title: '7 horas ou mais', hint: 'Até a noite' },
+];
+
+const durationChip = (hours: number): number => (hours >= 7 ? 8 : hours >= 5 ? 6 : 4);
 
 const ALCOHOL_OPTIONS: { id: AlcoholMode; title: string; hint: string }[] = [
   { id: 'lista', title: 'Entra no rateio', hint: 'Cerveja e afins na lista de compras' },
@@ -63,6 +72,7 @@ export function SetupScreen({
   dispatch: React.Dispatch<Action>;
 }) {
   const patch = (p: Partial<ChurrasState>) => dispatch({ type: 'patch', patch: p });
+  const hours = durationOf(state);
 
   return (
     <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-[clamp(16px,2.4vw,28px)]">
@@ -78,43 +88,29 @@ export function SetupScreen({
         </div>
 
         <div className="flex flex-col gap-3">
-          <SectionTitle>2. Onde vai ser?</SectionTitle>
-          <label className="grid grid-cols-[minmax(0,1fr)] gap-1">
-            <FieldLabel>Endereço</FieldLabel>
-            <input className={inputCls} value={state.eventAddress} onChange={(e) => patch({ eventAddress: e.target.value })} />
-          </label>
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,150px),1fr))] gap-3">
-            <label className="grid grid-cols-[minmax(0,1fr)] gap-1">
-              <FieldLabel>Bairro</FieldLabel>
-              <input className={inputCls} value={state.eventCity} onChange={(e) => patch({ eventCity: e.target.value })} />
-            </label>
-            <label className="grid grid-cols-[minmax(0,1fr)] gap-1">
-              <FieldLabel>Referência</FieldLabel>
-              <input className={inputCls} value={state.eventHint} onChange={(e) => patch({ eventHint: e.target.value })} />
-            </label>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-3">
-          <SectionTitle>3. Que dia e a que horas começa?</SectionTitle>
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,120px),1fr))] gap-3">
-            <label className="grid grid-cols-[minmax(0,1fr)] gap-1">
-              <FieldLabel>Data</FieldLabel>
-              <input type="date" className={inputCls} value={state.eventDay} onChange={(e) => patch({ eventDay: e.target.value })} />
-            </label>
-            <label className="grid grid-cols-[minmax(0,1fr)] gap-1">
-              <FieldLabel>Começa</FieldLabel>
-              <input type="time" className={inputCls} value={state.startTime} onChange={(e) => patch({ startTime: e.target.value })} />
-            </label>
-            <label className="grid grid-cols-[minmax(0,1fr)] gap-1">
-              <FieldLabel>Termina</FieldLabel>
-              <input type="time" className={inputCls} value={state.endTime} onChange={(e) => patch({ endTime: e.target.value })} />
-            </label>
+          <SectionTitle>2. Quanto tempo de churras?</SectionTitle>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,140px),1fr))] gap-3">
+            {DURATION_OPTIONS.map((opt) => {
+              const active = durationChip(hours) === opt.hours;
+              return (
+                <button
+                  key={opt.hours}
+                  aria-pressed={active}
+                  onClick={() => patch({ endTime: endTimeFor(state.startTime, opt.hours) })}
+                  className={`border-[3px] border-ink p-3 text-left shadow-comic-4 ${press} ${
+                    active ? 'bg-brand-sky text-paper' : 'bg-paper text-ink hover:bg-mustard'
+                  }`}
+                >
+                  <div className="text-[15px] font-black">{opt.title}</div>
+                  <div className={`text-[12px] font-bold ${active ? 'text-paper/80' : 'text-muted'}`}>{opt.hint}</div>
+                </button>
+              );
+            })}
           </div>
         </div>
 
         <div className="flex flex-col gap-3 border-[3px] border-dashed border-[#17130F66] bg-cream p-4">
-          <SectionTitle>4. E a bebida alcoólica?</SectionTitle>
+          <SectionTitle>3. E a bebida alcoólica?</SectionTitle>
           <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,180px),1fr))] gap-3">
             {ALCOHOL_OPTIONS.map((opt) => {
               const active = state.alcoholMode === opt.id;
@@ -165,8 +161,7 @@ export function SetupScreen({
             {[
               ['Convidados', `${result.guests} pessoas (${result.adults} adultos)`],
               ['Carne estimada', `~${kgLabel(result.meatBaseKg)}`],
-              ['Local', state.eventCity || 'a definir'],
-              ['Horário', `${state.startTime} — ${state.endTime} (${hoursLabel(result.hours)})`],
+              ['Duração', hoursLabel(result.hours)],
             ].map(([k, v]) => (
               <div key={k} className="flex justify-between gap-3 border-b-[3px] border-dotted border-[#17130F55] py-2 last:border-b-0">
                 <dt>{k}</dt>
@@ -188,7 +183,7 @@ export function SetupScreen({
           />
           <p className="p-4 text-[14px] font-bold text-body-text">
             A conta considera ~420 g de carne por homem, ~320 g por mulher e ~200 g por criança — e estica se o
-            churras passar de 5 horas.
+            churras passar de 5 horas. Local e data só entram se você quiser orçamento de açougues.
           </p>
         </section>
       </div>

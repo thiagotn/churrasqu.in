@@ -82,14 +82,15 @@ export function EditScreen({
   result,
   catalog,
   dispatch,
-  onSave,
+  onInvite,
   saving,
 }: {
   state: ChurrasState;
   result: CalculationResult;
   catalog: Catalog;
   dispatch: React.Dispatch<Action>;
-  onSave: () => void;
+  /** Caminho secundário: evento → conta → link/Pix/RSVP */
+  onInvite: () => void;
   saving: boolean;
 }) {
   const active = result.items.filter((i) => i.on);
@@ -174,11 +175,20 @@ export function EditScreen({
           </section>
 
           <button
-            onClick={onSave}
-            disabled={saving}
-            className={`border-4 border-ink bg-mustard px-6 py-4 font-display text-[clamp(24px,3vw,30px)] tracking-wide text-ink shadow-comic-8 hover:shadow-comic-5 disabled:opacity-60 ${press}`}
+            onClick={() => dispatch({ type: 'go', screen: 'quote' })}
+            className={`border-4 border-ink bg-ember px-6 py-4 font-display text-[clamp(24px,3vw,30px)] tracking-wide text-paper shadow-comic-8 hover:bg-ember-hover hover:shadow-comic-5 ${press}`}
           >
-            {saving ? 'Salvando…' : state.savedId ? 'Atualizar e compartilhar' : 'Salvar e compartilhar'}
+            Receber orçamentos de açougues →
+          </button>
+          <p className="-mt-2 text-[13px] font-bold text-muted">
+            Grátis e sem cadastro: mandamos esta lista para açougues perto de você e eles respondem no seu WhatsApp.
+          </p>
+          <button
+            onClick={onInvite}
+            disabled={saving}
+            className={`border-[3px] border-ink bg-mustard px-4 py-3 text-[16px] font-black text-ink shadow-comic-4 disabled:opacity-60 ${press}`}
+          >
+            {saving ? 'Salvando…' : state.savedId ? 'Atualizar convite da galera' : 'Organizar e convidar a galera'}
           </button>
           <button
             onClick={() => dispatch({ type: 'go', screen: 'tiers' })}
@@ -187,7 +197,7 @@ export function EditScreen({
             ← Trocar padrão da lista
           </button>
           <p className="text-[13px] font-bold text-muted">
-            Salvar exige uma conta rapidinha — é o que garante que o link do seu churras continue no ar.
+            Preços de referência — o orçamento do açougue traz o valor real.
           </p>
         </div>
       </div>
@@ -200,11 +210,10 @@ export function EditScreen({
           <div className="text-[12px] font-bold text-ink/80">{money(result.perAdult)} por adulto</div>
         </div>
         <button
-          onClick={onSave}
-          disabled={saving}
-          className={`border-[3px] border-ink bg-ember px-4 py-3 font-display text-[18px] tracking-wide text-paper shadow-comic-3 disabled:opacity-60 ${press}`}
+          onClick={() => dispatch({ type: 'go', screen: 'quote' })}
+          className={`border-[3px] border-ink bg-ember px-4 py-3 font-display text-[18px] tracking-wide text-paper shadow-comic-3 ${press}`}
         >
-          {saving ? 'Salvando…' : state.savedId ? 'Atualizar →' : 'Salvar →'}
+          Pedir orçamento →
         </button>
       </div>
     </div>
