@@ -126,7 +126,7 @@ export function SetupScreen({
             ))}
           </dl>
           <div className="mt-3 border-[3px] border-ink bg-paper p-3 text-[14px] font-bold text-body-text">
-            A lista foca no que o açougue vende: carnes, carvão, acompanhamentos e bebidas sem álcool.
+            A lista foca no que o açougue vende: carnes, acompanhamentos, carvão e essenciais — bebidas ficam de fora.
           </div>
         </section>
 

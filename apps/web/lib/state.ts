@@ -52,7 +52,7 @@ export const initialState: ChurrasState = {
   eventAddress: '',
   eventCity: '',
   eventHint: '',
-  // bebida alcoólica fora da conta (foco no orçamento do açougue); churras antigos retomados mantêm o seu modo
+  // legado: bebidas não entram mais na lista; 'byob' só rotula o convite ("cada um leva a sua")
   alcoholMode: 'byob',
   tier: 'medio',
   edits: {},

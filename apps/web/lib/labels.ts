@@ -2,7 +2,7 @@ import { AlcoholMode } from '@churrasquin/calculator';
 
 export const ALCOHOL_NOTE: Record<AlcoholMode, string> = {
   lista: 'Bebida alcoólica entra na lista e no rateio de todo mundo.',
-  byob: 'Bebida alcoólica fica por conta de cada um — a lista cobre suco, refri, água e gelo.',
+  byob: 'Bebidas ficam por conta de cada um — a lista cobre carnes, acompanhamentos e essenciais.',
   bar: 'Consumação no bar é paga individualmente e fica fora do rateio.',
   none: 'Churras sem álcool: sucos e refrigerante na conta.',
 };

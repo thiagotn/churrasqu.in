@@ -66,7 +66,6 @@ describe('Página pública + QR + Pix (e2e)', () => {
     expect(res.body.perAdult).toBeGreaterThan(0);
     expect(res.body.categories.map((c: { category: string }) => c.category)).toEqual([
       'Carnes',
-      'Bebidas',
       'Acompanhamentos',
       'Essenciais',
     ]);

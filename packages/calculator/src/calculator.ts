@@ -11,7 +11,6 @@ import {
   Unit,
 } from './types';
 
-export const DEFAULT_BEER_PER_ADULT_L = 1.5;
 
 export const ALCOHOL_MODES: AlcoholMode[] = ['lista', 'byob', 'bar', 'none'];
 
@@ -35,7 +34,7 @@ export function durationHours(startTime: string, endTime: string): number {
   return Math.min(14, Math.max(1, d));
 }
 
-/** Fator de esticada: churras longo consome mais carne, gelo e carvão. */
+/** Fator de esticada: churras longo consome mais carne e carvão. */
 export const stretchFor = (hours: number): number =>
   hours >= 7 ? 1.25 : hours >= 5 ? 1.12 : 1;
 
@@ -67,15 +66,13 @@ function validate(input: CalculatorInput, catalog: Catalog): void {
   if (!ALCOHOL_MODES.includes(input.alcoholMode)) {
     throw new Error(`Política de bebida desconhecida: ${String(input.alcoholMode)}`);
   }
-  if (input.beerPerAdultL !== undefined && !(input.beerPerAdultL > 0)) {
-    throw new Error(`beerPerAdultL deve ser > 0 (recebido: ${input.beerPerAdultL})`);
-  }
 }
 
 /**
  * Lista de compras sugerida para o nível, sem ajustes do usuário.
  * Ids são estáveis por nome (`medio-picanha`), para que edits/prices sobrevivam
- * a mudanças de convidados, horário ou política de bebida.
+ * a mudanças de convidados ou horário.
+ * Sem bebidas (fatia 10): a lista foca no que o açougue vende — carnes, acompanhamentos e essenciais.
  */
 export function buildBaseList(input: CalculatorInput, catalog: Catalog = TIERS): ListItem[] {
   validate(input, catalog);
@@ -84,7 +81,6 @@ export function buildBaseList(input: CalculatorInput, catalog: Catalog = TIERS):
   const guests = adults + input.kids;
   const hours = durationHours(input.startTime, input.endTime);
   const stretch = stretchFor(hours);
-  const beerL = input.beerPerAdultL ?? DEFAULT_BEER_PER_ADULT_L;
   const meatKg = meatForTier(meatBaseKg(input, stretch), input.tier);
 
   const items: ListItem[] = [];
@@ -115,39 +111,6 @@ export function buildBaseList(input: CalculatorInput, catalog: Catalog = TIERS):
   for (const cut of tier.cuts) {
     push(cut.name, 'Carnes', 'kg', cut.unitPrice, roundKg(meatKg * cut.proportion));
   }
-
-  if (input.alcoholMode === 'lista') {
-    if (input.tier === 'basico') {
-      push('Cerveja lata 350ml', 'Bebidas', 'un', 4.2, roundUnits((adults * beerL) / 0.35));
-    }
-    if (input.tier === 'medio') {
-      push('Cerveja long neck 355ml', 'Bebidas', 'un', 6.9, roundUnits((adults * beerL) / 0.355));
-      push('Kit caipirinha (cachaça, limão, açúcar)', 'Bebidas', 'kit', 78, roundUnits(adults / 10));
-    }
-    if (input.tier === 'gourmet') {
-      push('Cerveja artesanal IPA 600ml', 'Bebidas', 'un', 34, roundUnits((adults * beerL) / 0.6));
-      push('Vinho Malbec (garrafa)', 'Bebidas', 'un', 119, roundUnits(adults / 6));
-      push('Espumante brut (garrafa)', 'Bebidas', 'un', 89, roundUnits(adults / 10));
-    }
-  } else {
-    push('Suco natural concentrado 1L', 'Bebidas', 'un', 19, roundUnits(guests / 4));
-  }
-  const gourmet = input.tier === 'gourmet';
-  push('Refrigerante 2L', 'Bebidas', 'un', gourmet ? 14 : 11.5, roundUnits((guests * 0.55) / 2));
-  push(
-    gourmet ? 'Água com gás 500ml' : 'Água mineral 1,5L',
-    'Bebidas',
-    'un',
-    gourmet ? 8.5 : 4.5,
-    roundUnits(gourmet ? guests : (guests * 0.6) / 1.5),
-  );
-  push(
-    gourmet ? 'Gelo filtrado em cubo 5kg' : 'Gelo 5kg',
-    'Bebidas',
-    'saco',
-    gourmet ? 22 : 14,
-    roundUnits((guests / 6) * stretch),
-  );
 
   for (const side of tier.sides) {
     const bucket = side.per === 'adult' ? adults : guests;

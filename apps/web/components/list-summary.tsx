@@ -3,7 +3,7 @@
 import { CalculationResult, Category } from '@churrasquin/calculator';
 import { kgLabel, money, qtyLabel } from '../lib/format';
 
-const CATEGORY_ORDER: Category[] = ['Carnes', 'Bebidas', 'Acompanhamentos', 'Essenciais'];
+const CATEGORY_ORDER: Category[] = ['Carnes', 'Acompanhamentos', 'Essenciais'];
 
 /** Lista compacta por categoria (quantidades) — o que vai para o açougue. */
 export function ListSummary({ result, tierName }: { result: CalculationResult; tierName: string }) {
@@ -11,9 +11,9 @@ export function ListSummary({ result, tierName }: { result: CalculationResult; t
   return (
     <section className="flex flex-col gap-3 border-4 border-ink bg-paper p-[clamp(18px,2.5vw,30px)] shadow-comic-10">
       <div>
-        <h2 className="font-display text-[clamp(22px,3vw,28px)] tracking-wide text-ink">Sua lista {tierName}</h2>
+        <h2 className="font-display text-[clamp(22px,3vw,28px)] tracking-wide text-ink">Itens do Churras</h2>
         <p className="text-[14px] font-extrabold text-muted">
-          {result.guests} convidados · {kgLabel(result.meatListKg)} de carne · referência {money(result.total)}
+          Padrão {tierName} · {result.guests} convidados · {kgLabel(result.meatListKg)} de carne · referência {money(result.total)}
         </p>
       </div>
       {CATEGORY_ORDER.map((category) => {

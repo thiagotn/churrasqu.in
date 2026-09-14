@@ -112,15 +112,6 @@ describe('buildBaseList — nível médio, cenário padrão', () => {
     }
   });
 
-  it('bebidas do médio: long neck por adulto e kit caipirinha a cada 10 adultos', () => {
-    // 11 adultos * 1.5L / 0.355 = 46.48 → 47
-    expect(byId(items, 'medio-cerveja-long-neck-355ml').qty).toBe(47);
-    expect(byId(items, 'medio-kit-caipirinha-cachaca-limao-acucar').qty).toBe(2); // 11/10 → 2
-    expect(byId(items, 'medio-refrigerante-2l').qty).toBe(4); // 14*0.55/2 = 3.85 → 4
-    expect(byId(items, 'medio-agua-mineral-1-5l').qty).toBe(6); // 14*0.6/1.5 = 5.6 → 6
-    expect(byId(items, 'medio-gelo-5kg').qty).toBe(3); // 14/6*1.12 = 2.61 → 3
-  });
-
   it('acompanhamentos por convidado/adulto com o fator do catálogo', () => {
     expect(byId(items, 'medio-pao-de-alho-artesanal').qty).toBe(14); // 1 por convidado
     expect(byId(items, 'medio-queijo-coalho-no-espeto').qty).toBe(11); // 1 por adulto
@@ -157,40 +148,20 @@ describe('buildBaseList — nível médio, cenário padrão', () => {
   });
 });
 
-describe('buildBaseList — políticas de bebida', () => {
-  it('lista + básico: cerveja em lata', () => {
-    const items = buildBaseList({ ...defaults, tier: 'basico' });
-    expect(byId(items, 'basico-cerveja-lata-350ml').qty).toBe(48); // 11*1.5/0.35 = 47.1 → 48
-  });
-
-  it('lista + gourmet: IPA, Malbec e espumante', () => {
-    const items = buildBaseList({ ...defaults, tier: 'gourmet' });
-    expect(byId(items, 'gourmet-cerveja-artesanal-ipa-600ml').qty).toBe(28); // 16.5/0.6 = 27.5 → 28
-    expect(byId(items, 'gourmet-vinho-malbec-garrafa').qty).toBe(2); // 11/6 → 2
-    expect(byId(items, 'gourmet-espumante-brut-garrafa').qty).toBe(2); // 11/10 → 2
-  });
-
-  it('byob, bar e none: sem álcool na lista, suco no lugar', () => {
-    for (const alcoholMode of ['byob', 'bar', 'none'] as const) {
-      const items = buildBaseList({ ...defaults, alcoholMode });
-      expect(items.some((i) => i.name.toLowerCase().includes('cerveja'))).toBe(false);
-      expect(items.some((i) => i.name.toLowerCase().includes('caipirinha'))).toBe(false);
-      expect(byId(items, 'medio-suco-natural-concentrado-1l').qty).toBe(4); // 14/4 → 4
+describe('buildBaseList — sem bebidas', () => {
+  it('nenhum nível nem política gera itens de Bebidas', () => {
+    for (const tier of ['basico', 'medio', 'gourmet'] as const) {
+      for (const alcoholMode of ['lista', 'byob', 'bar', 'none'] as const) {
+        const items = buildBaseList({ ...defaults, tier, alcoholMode });
+        expect(items.filter((i) => i.category === 'Bebidas')).toEqual([]);
+      }
     }
   });
 
-  it('refrigerante, água e gelo entram em qualquer política', () => {
-    for (const alcoholMode of ['lista', 'byob', 'bar', 'none'] as const) {
-      const names = buildBaseList({ ...defaults, alcoholMode }).map((i) => i.id);
-      expect(names).toContain('medio-refrigerante-2l');
-      expect(names).toContain('medio-agua-mineral-1-5l');
-      expect(names).toContain('medio-gelo-5kg');
-    }
-  });
-
-  it('beerPerAdultL é parametrizável', () => {
-    const items = buildBaseList({ ...defaults, beerPerAdultL: 0.5 });
-    expect(byId(items, 'medio-cerveja-long-neck-355ml').qty).toBe(16); // 5.5/0.355 = 15.5 → 16
+  it('política de bebida (legado) não muda a lista', () => {
+    const ids = (alcoholMode: CalculatorInput['alcoholMode']) =>
+      buildBaseList({ ...defaults, alcoholMode }).map((i) => `${i.id}:${i.qty}`);
+    expect(ids('none')).toEqual(ids('lista'));
   });
 });
 
@@ -250,7 +221,7 @@ describe('adjustmentsFromSnapshot — retomar edição', () => {
       'medio-costela-bovina': 3, // qty editada
       'medio-tabua-de-frios': 1, // opcional ativado
     },
-    prices: { 'medio-cerveja-long-neck-355ml': 5.5 }, // preço editado
+    prices: { 'medio-linguica-artesanal': 35 }, // preço editado
   };
 
   it('roundtrip: snapshot → ajustes → mesma lista e total', () => {
@@ -280,7 +251,7 @@ describe('adjustmentsFromSnapshot — retomar edição', () => {
 });
 
 describe('calculate — totais e rateio', () => {
-  // Cenário pequeno, verificável à mão: 2 homens, 4h, básico, sem álcool.
+  // Cenário pequeno, verificável à mão: 2 homens, 4h, básico.
   const small: CalculatorInput = {
     men: 2,
     women: 0,
@@ -294,11 +265,10 @@ describe('calculate — totais e rateio', () => {
   it('total é a soma de qty × preço dos itens ativos, rateado por adulto', () => {
     const result = calculate(small);
     // Carnes (0.84kg → cada corte no mínimo 0.5kg): 0.5*26 + 0.5*19 + 0.5*49 = 47
-    // Bebidas: suco 1*19 + refri 1*11.5 + água 1*4.5 + gelo 1*14 = 49
     // Acompanhamentos: pão de alho 2*4.5 + farofa 1*12 + vinagrete 1*18 = 39
     // Essenciais: carvão 1*29 + sal 1*9.5 + descartáveis 1*38 + acendedor 1*24 = 100.5
-    expect(result.total).toBe(235.5);
-    expect(result.perAdult).toBe(117.75);
+    expect(result.total).toBe(186.5);
+    expect(result.perAdult).toBe(93.25);
     expect(result.adults).toBe(2);
     expect(result.guests).toBe(2);
     expect(result.hours).toBe(4);

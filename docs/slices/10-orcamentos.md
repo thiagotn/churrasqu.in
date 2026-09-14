@@ -12,6 +12,8 @@ WhatsApp. O convite (link, Pix, RSVP) segue disponível como caminho secundário
 
 - [x] Tela 1: remove "Onde vai ser?" e "Que dia e a que horas?"; adiciona duração (4h / 6h / 8h) que ajusta `endTime`
 - [x] Tela 1 sem a pergunta de bebida alcoólica (`alcoholMode` fixo em `byob` no front)
+- [x] Categoria Bebidas removida da lista sugerida (`buildBaseList`, sem `beerPerAdultL`); catálogo no banco conferido sem bebidas (local e produção)
+- [x] "Lista <Padrão>" vira "Itens do Churras" (com "Padrão X" no subtítulo); stepper "3 · Itens"
 - [x] Lista no desktop: nome do item nunca truncado (quebra linha; linha única só em xl, coluna do total com largura fixa)
 - [x] CTA de orçamento em verde WhatsApp com o ícone (lista, barra mobile e envio do formulário)
 - [x] Tela 3: CTA principal "Receber orçamentos de açougues", secundário "Organizar e convidar a galera"; barra mobile com "Pedir orçamento"

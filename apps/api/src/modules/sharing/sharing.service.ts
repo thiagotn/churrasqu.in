@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { RsvpService } from '../rsvp/rsvp.service';
 import { PixKeyType, buildPixPayload, normalizePixKey } from './pix';
 
+// 'Bebidas' fica para convites salvos antes da fatia 10 (a lista sugerida não gera mais)
 const CATEGORY_ORDER = ['Carnes', 'Bebidas', 'Acompanhamentos', 'Essenciais'];
 
 @Injectable()

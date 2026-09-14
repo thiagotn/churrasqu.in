@@ -1,9 +1,11 @@
 export type TierId = 'basico' | 'medio' | 'gourmet';
 
+/** Legado: churras salvos antes da fatia 10 guardam a política; não altera mais a lista. */
 export type AlcoholMode = 'lista' | 'byob' | 'bar' | 'none';
 
 export type Unit = 'kg' | 'un' | 'kit' | 'saco' | 'dz';
 
+/** 'Bebidas' só aparece em snapshots salvos antes da fatia 10; a lista sugerida não gera mais. */
 export type Category = 'Carnes' | 'Bebidas' | 'Acompanhamentos' | 'Essenciais';
 
 export interface CalculatorInput {
@@ -15,8 +17,6 @@ export interface CalculatorInput {
   endTime: string;
   alcoholMode: AlcoholMode;
   tier: TierId;
-  /** Litros de cerveja por adulto quando alcoholMode = 'lista'. Default 1.5. */
-  beerPerAdultL?: number;
 }
 
 export interface ListItem {

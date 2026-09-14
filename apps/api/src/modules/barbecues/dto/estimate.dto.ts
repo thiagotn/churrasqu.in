@@ -4,7 +4,6 @@ import {
   IsInt,
   IsObject,
   IsOptional,
-  IsPositive,
   Matches,
   Min,
   ValidateNested,
@@ -47,10 +46,6 @@ export class EstimateRequestDto {
 
   @IsIn(['basico', 'medio', 'gourmet'])
   tier!: TierId;
-
-  @IsOptional()
-  @IsPositive()
-  beerPerAdultL?: number;
 
   @IsOptional()
   @ValidateNested()

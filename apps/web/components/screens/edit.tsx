@@ -5,7 +5,7 @@ import { kgLabel, money } from '../../lib/format';
 import { Action, ChurrasState } from '../../lib/state';
 import { PriceInput, QtyInput, WhatsAppIcon, press } from '../ui';
 
-const CATEGORY_ORDER: Category[] = ['Carnes', 'Bebidas', 'Acompanhamentos', 'Essenciais'];
+const CATEGORY_ORDER: Category[] = ['Carnes', 'Acompanhamentos', 'Essenciais'];
 
 // Preço unitário compacto: "R$/kg" em vez de "por kg · R$"
 const UNIT_SHORT: Record<ListItem['unit'], string> = {
@@ -100,9 +100,12 @@ export function EditScreen({
   return (
     <div className="flex flex-col gap-[clamp(16px,2.4vw,28px)] pb-24 md:pb-0">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <h1 className="font-display text-[clamp(32px,5vw,48px)] tracking-wide text-ink">
-          Lista {catalog[state.tier].name}
-        </h1>
+        <div>
+          <h1 className="font-display text-[clamp(32px,5vw,48px)] tracking-wide text-ink">Itens do Churras</h1>
+          <p className="text-[15px] font-extrabold text-muted">
+            Padrão {catalog[state.tier].name} · {result.guests} convidados
+          </p>
+        </div>
         {hasAdjustments && (
           <button
             onClick={() => dispatch({ type: 'restore' })}
