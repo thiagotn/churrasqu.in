@@ -11,6 +11,9 @@ WhatsApp. O convite (link, Pix, RSVP) segue disponível como caminho secundário
 ## Checklist
 
 - [x] Tela 1: remove "Onde vai ser?" e "Que dia e a que horas?"; adiciona duração (4h / 6h / 8h) que ajusta `endTime`
+- [x] Tela 1 sem a pergunta de bebida alcoólica (`alcoholMode` fixo em `byob` no front)
+- [x] Lista no desktop: nome do item nunca truncado (quebra linha; linha única só em xl, coluna do total com largura fixa)
+- [x] CTA de orçamento em verde WhatsApp com o ícone (lista, barra mobile e envio do formulário)
 - [x] Tela 3: CTA principal "Receber orçamentos de açougues", secundário "Organizar e convidar a galera"; barra mobile com "Pedir orçamento"
 - [x] `EventFields` compartilhado (data, início, CEP, bairro/cidade, endereço e referência opcionais) — usado no orçamento, no evento e no Compartilhar
 - [x] Telas novas: `quote` (#orcamento), `quoteSent` (#orcamento-enviado), `event` (#evento); `ListSummary` por categoria

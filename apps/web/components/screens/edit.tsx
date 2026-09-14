@@ -3,7 +3,7 @@
 import { CalculationResult, Catalog, Category, ListItem } from '@churrasquin/calculator';
 import { kgLabel, money } from '../../lib/format';
 import { Action, ChurrasState } from '../../lib/state';
-import { PriceInput, QtyInput, press } from '../ui';
+import { PriceInput, QtyInput, WhatsAppIcon, press } from '../ui';
 
 const CATEGORY_ORDER: Category[] = ['Carnes', 'Bebidas', 'Acompanhamentos', 'Essenciais'];
 
@@ -19,7 +19,7 @@ const UNIT_SHORT: Record<ListItem['unit'], string> = {
 const stepOf = (item: ListItem): number => (item.unit === 'kg' ? 0.5 : 1);
 
 // Mobile: nome (+ remover) na 1ª linha e TODOS os controles numa única 2ª linha,
-// sem quebra. Desktop (md+): o item inteiro numa linha só.
+// sem quebra. Telas largas (xl+): o item inteiro numa linha só. O nome nunca é cortado.
 function ItemRow({ item, dispatch }: { item: ListItem; dispatch: React.Dispatch<Action> }) {
   const step = stepOf(item);
   const setQty = (qty: number) => dispatch({ type: 'editQty', id: item.id, qty: Math.max(step, qty) });
@@ -33,13 +33,13 @@ function ItemRow({ item, dispatch }: { item: ListItem; dispatch: React.Dispatch<
     </button>
   );
   return (
-    <div className="flex flex-wrap items-center gap-x-1.5 gap-y-2 border-b-2 border-[#17130F1A] py-3 last:border-b-0 md:flex-nowrap md:gap-x-3">
+    <div className="flex flex-wrap items-center gap-x-1.5 gap-y-2 border-b-2 border-[#17130F1A] py-3 last:border-b-0 xl:flex-nowrap xl:gap-x-3">
       {/* Nome: linha própria no mobile (w-full força a quebra), flex-1 no desktop */}
-      <div className="flex w-full min-w-0 items-center justify-between gap-2 md:w-auto md:flex-1">
-        <span className="truncate text-[15px] font-black text-ink md:text-[16px]" title={item.name}>
+      <div className="flex w-full min-w-0 items-center justify-between gap-2 xl:w-auto xl:flex-1">
+        <span className="min-w-0 break-words text-[15px] font-black leading-tight text-ink xl:text-[16px]">
           {item.name}
         </span>
-        {removeButton('md:hidden')}
+        {removeButton('xl:hidden')}
       </div>
 
       <label className="flex shrink-0 items-center gap-1 whitespace-nowrap text-[13px] font-bold text-muted">
@@ -68,11 +68,11 @@ function ItemRow({ item, dispatch }: { item: ListItem; dispatch: React.Dispatch<
         </button>
       </div>
 
-      <div className="ml-auto min-w-[72px] text-right text-[14px] font-black text-ink md:ml-0 md:min-w-[92px] md:text-[15px]">
+      <div className="ml-auto min-w-[72px] text-right text-[14px] font-black text-ink xl:ml-0 xl:min-w-[92px] xl:text-[15px]">
         {money(item.qty * item.unitPrice)}
       </div>
 
-      {removeButton('hidden md:block')}
+      {removeButton('hidden xl:block')}
     </div>
   );
 }
@@ -113,7 +113,7 @@ export function EditScreen({
         )}
       </div>
 
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] items-start gap-[clamp(16px,2.4vw,28px)]">
+      <div className="grid grid-cols-1 items-start gap-[clamp(16px,2.4vw,28px)] md:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
         {/* Categorias */}
         <div className="flex flex-col gap-[clamp(16px,2.4vw,28px)]">
           {CATEGORY_ORDER.map((category) => {
@@ -176,9 +176,10 @@ export function EditScreen({
 
           <button
             onClick={() => dispatch({ type: 'go', screen: 'quote' })}
-            className={`border-4 border-ink bg-ember px-6 py-4 font-display text-[clamp(24px,3vw,30px)] tracking-wide text-paper shadow-comic-8 hover:bg-ember-hover hover:shadow-comic-5 ${press}`}
+            className={`flex items-center justify-center gap-3 border-4 border-ink bg-whatsapp px-5 py-4 text-left font-display text-[clamp(22px,2.6vw,28px)] leading-none tracking-wide text-ink shadow-comic-8 hover:bg-whatsapp-hover hover:shadow-comic-5 ${press}`}
           >
-            Receber orçamentos de açougues →
+            <WhatsAppIcon className="h-8 w-8" />
+            Receber orçamentos de açougues
           </button>
           <p className="-mt-2 text-[13px] font-bold text-muted">
             Grátis e sem cadastro: mandamos esta lista para açougues perto de você e eles respondem no seu WhatsApp.
@@ -211,9 +212,10 @@ export function EditScreen({
         </div>
         <button
           onClick={() => dispatch({ type: 'go', screen: 'quote' })}
-          className={`border-[3px] border-ink bg-ember px-4 py-3 font-display text-[18px] tracking-wide text-paper shadow-comic-3 ${press}`}
+          className={`flex items-center gap-2 border-[3px] border-ink bg-whatsapp px-3 py-3 font-display text-[18px] leading-none tracking-wide text-ink shadow-comic-3 ${press}`}
         >
-          Pedir orçamento →
+          <WhatsAppIcon className="h-5 w-5" />
+          Pedir orçamento
         </button>
       </div>
     </div>

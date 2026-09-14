@@ -6,7 +6,7 @@ import { ApiError, api } from '../../lib/api';
 import { Action, ChurrasState } from '../../lib/state';
 import { EventFields } from '../event-fields';
 import { ListSummary } from '../list-summary';
-import { FieldLabel, inputCls, press } from '../ui';
+import { FieldLabel, WhatsAppIcon, inputCls, press } from '../ui';
 
 /** '11988881234' → '(11) 98888-1234' enquanto digita */
 export const maskPhone = (raw: string): string => {
@@ -157,9 +157,10 @@ export function QuoteScreen({
 
         <button
           disabled={busy}
-          className={`border-4 border-ink bg-ember px-6 py-4 font-display text-[clamp(24px,3vw,30px)] tracking-wide text-paper shadow-comic-8 hover:bg-ember-hover hover:shadow-comic-5 disabled:opacity-60 ${press}`}
+          className={`flex items-center justify-center gap-3 border-4 border-ink bg-whatsapp px-6 py-4 font-display text-[clamp(22px,3vw,30px)] leading-none tracking-wide text-ink shadow-comic-8 hover:bg-whatsapp-hover hover:shadow-comic-5 disabled:opacity-60 ${press}`}
         >
-          {busy ? 'Enviando…' : 'Quero receber orçamentos →'}
+          <WhatsAppIcon className="h-8 w-8" />
+          {busy ? 'Enviando…' : 'Quero receber orçamentos'}
         </button>
         <button
           type="button"

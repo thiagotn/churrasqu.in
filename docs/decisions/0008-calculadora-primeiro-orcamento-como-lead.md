@@ -11,9 +11,11 @@ próximos** — só aí faz sentido pedir local, data e contato.
 
 ## Decisão
 
-1. **Tela 1 só com o que muda a conta**: pessoas, duração (chips 4h / 6h / 8h) e bebida. Local e data
-   saem. O pacote `@churrasquin/calculator` e os DTOs não mudam: o front mantém `startTime`/`endTime`
-   (default 12:00) e a duração vira `endTime = start + horas` (`endTimeFor` em `lib/state.ts`).
+1. **Tela 1 só com o que muda a conta**: pessoas e duração (chips 4h / 6h / 8h). Local, data e a
+   pergunta de bebida alcoólica saem — o foco é o que o açougue vende; o front fixa `alcoholMode: 'byob'`
+   (lista com suco, refri, água e gelo, sem álcool). Churras antigos retomados do `/meus` mantêm o modo
+   salvo; o domínio e o DTO continuam aceitando os 4 modos.
+   O pacote `@churrasquin/calculator` e os DTOs não mudam: o front mantém `startTime`/`endTime` (default 12:00) e a duração vira `endTime = start + horas` (`endTimeFor` em `lib/state.ts`).
 2. **Duas saídas depois da lista**: principal "Receber orçamentos" (`quote` → `quoteSent`) e secundária
    "Organizar e convidar" (`event` → conta → `saved`, o fluxo das fatias 3–7 intacto). O passo 4 do
    stepper troca de rótulo/tela pelo `branch`.

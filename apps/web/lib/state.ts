@@ -22,7 +22,6 @@ export interface ChurrasState {
   eventCity: string;
   eventHint: string;
   alcoholMode: AlcoholMode;
-  barSpend: string;
   tier: TierId;
   edits: Record<string, number | null>;
   prices: Record<string, number>;
@@ -53,8 +52,8 @@ export const initialState: ChurrasState = {
   eventAddress: '',
   eventCity: '',
   eventHint: '',
-  alcoholMode: 'lista',
-  barSpend: '60',
+  // bebida alcoólica fora da conta (foco no orçamento do açougue); churras antigos retomados mantêm o seu modo
+  alcoholMode: 'byob',
   tier: 'medio',
   edits: {},
   prices: {},

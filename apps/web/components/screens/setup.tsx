@@ -1,8 +1,7 @@
 'use client';
 
-import { AlcoholMode, CalculationResult } from '@churrasquin/calculator';
+import { CalculationResult } from '@churrasquin/calculator';
 import { hoursLabel, kgLabel } from '../../lib/format';
-import { ALCOHOL_NOTE } from '../../lib/labels';
 import { Action, ChurrasState, durationOf, endTimeFor } from '../../lib/state';
 import { press } from '../ui';
 
@@ -14,13 +13,6 @@ const DURATION_OPTIONS: { hours: number; title: string; hint: string }[] = [
 ];
 
 const durationChip = (hours: number): number => (hours >= 7 ? 8 : hours >= 5 ? 6 : 4);
-
-const ALCOHOL_OPTIONS: { id: AlcoholMode; title: string; hint: string }[] = [
-  { id: 'lista', title: 'Entra no rateio', hint: 'Cerveja e afins na lista de compras' },
-  { id: 'byob', title: 'Cada um leva a sua', hint: 'Fora do rateio — só gelo e cooler' },
-  { id: 'bar', title: 'Compra no bar do local', hint: 'Consumação paga individualmente' },
-  { id: 'none', title: 'Sem álcool', hint: 'Só sucos e refrigerante' },
-];
 
 function PersonStepper({
   title,
@@ -109,42 +101,6 @@ export function SetupScreen({
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 border-[3px] border-dashed border-[#17130F66] bg-cream p-4">
-          <SectionTitle>3. E a bebida alcoólica?</SectionTitle>
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,180px),1fr))] gap-3">
-            {ALCOHOL_OPTIONS.map((opt) => {
-              const active = state.alcoholMode === opt.id;
-              return (
-                <button
-                  key={opt.id}
-                  onClick={() => patch({ alcoholMode: opt.id })}
-                  className={`border-[3px] border-ink p-3 text-left shadow-comic-4 ${press} ${
-                    active ? 'bg-brand-sky text-paper' : 'bg-paper text-ink hover:bg-mustard'
-                  }`}
-                >
-                  <div className="text-[15px] font-black">{opt.title}</div>
-                  <div className={`text-[12px] font-bold ${active ? 'text-paper/80' : 'text-muted'}`}>{opt.hint}</div>
-                </button>
-              );
-            })}
-          </div>
-          {state.alcoholMode === 'bar' && (
-            <label className="flex flex-wrap items-center gap-2 text-[14px] font-bold text-body-text">
-              Gasto médio no bar do local&nbsp;
-              <span className="flex items-center gap-1">
-                R$
-                <input
-                  inputMode="numeric"
-                  className="h-[40px] w-[72px] border-[3px] border-ink bg-white text-center font-black text-ink outline-none"
-                  value={state.barSpend}
-                  onChange={(e) => patch({ barSpend: e.target.value.replace(/\D/g, '') })}
-                />
-                / adulto (fora do rateio)
-              </span>
-            </label>
-          )}
-        </div>
-
         <button
           onClick={() => dispatch({ type: 'go', screen: 'tiers' })}
           className={`border-4 border-ink bg-ember px-6 py-4 font-display text-[clamp(24px,3vw,32px)] tracking-wide text-paper shadow-comic-8 hover:bg-ember-hover hover:shadow-comic-5 ${press}`}
@@ -170,7 +126,7 @@ export function SetupScreen({
             ))}
           </dl>
           <div className="mt-3 border-[3px] border-ink bg-paper p-3 text-[14px] font-bold text-body-text">
-            {ALCOHOL_NOTE[state.alcoholMode]}
+            A lista foca no que o açougue vende: carnes, carvão, acompanhamentos e bebidas sem álcool.
           </div>
         </section>
 
