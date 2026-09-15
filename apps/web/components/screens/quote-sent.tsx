@@ -1,7 +1,6 @@
 'use client';
 
 import { CalculationResult } from '@churrasquin/calculator';
-import { hoursLabel } from '../../lib/format';
 import { dayLabel } from '../../lib/labels';
 import { Action, ChurrasState } from '../../lib/state';
 import { ListSummary } from '../list-summary';
@@ -26,7 +25,7 @@ export function QuoteSentScreen({
           Pedido enviado{state.contactName ? `, ${state.contactName.split(' ')[0]}` : ''}!
         </h1>
         <p className="text-[15px] font-extrabold text-ink">
-          Protocolo #{protocol} · {dayLabel(state.eventDay)} às {state.startTime} ({hoursLabel(result.hours)}) ·{' '}
+          Protocolo #{protocol} · {dayLabel(state.eventDay)} às {state.startTime} ·{' '}
           {state.eventCity}
         </p>
       </section>

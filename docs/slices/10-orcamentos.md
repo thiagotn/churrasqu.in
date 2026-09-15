@@ -10,7 +10,9 @@ WhatsApp. O convite (link, Pix, RSVP) segue disponível como caminho secundário
 
 ## Checklist
 
-- [x] Tela 1: remove "Onde vai ser?" e "Que dia e a que horas?"; adiciona duração (4h / 6h / 8h) que ajusta `endTime`
+- [x] Tela 1: remove "Onde vai ser?" e "Que dia e a que horas?"; só "Quem vai?"
+- [x] Duração não perguntada: conta fixa em 6h (`DEFAULT_DURATION_HOURS`); fim acompanha o início digitado
+- [x] Tela de Padrão sem o botão "← Ajustar pessoas"
 - [x] Tela 1 sem a pergunta de bebida alcoólica (`alcoholMode` fixo em `byob` no front)
 - [x] Categoria Bebidas removida da lista sugerida (`buildBaseList`, sem `beerPerAdultL`); catálogo no banco conferido sem bebidas (local e produção)
 - [x] "Lista <Padrão>" vira "Itens do Churras" (com "Padrão X" no subtítulo); stepper "3 · Itens"

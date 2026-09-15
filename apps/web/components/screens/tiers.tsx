@@ -103,12 +103,6 @@ export function TiersScreen({
             {result.guests} convidados · {kgLabel(result.meatBaseKg)} de carne
           </p>
         </div>
-        <button
-          onClick={() => dispatch({ type: 'go', screen: 'setup' })}
-          className={`rounded-full border-[3px] border-ink bg-paper px-4 py-2 text-[14px] font-extrabold text-ink shadow-comic-3 hover:bg-mustard ${press}`}
-        >
-          ← Ajustar pessoas
-        </button>
       </div>
 
       {/* Mobile: abas com o preço no rótulo (comparação sempre visível) + um card por vez */}

@@ -1,6 +1,5 @@
 'use client';
 
-import { hoursLabel } from '../lib/format';
 import { ChurrasState, durationOf, endTimeFor } from '../lib/state';
 import { FieldLabel, inputCls } from './ui';
 
@@ -23,7 +22,7 @@ export const maskCep = (raw: string): string => {
 
 /**
  * Quando e onde — compartilhado entre o pedido de orçamento e o convite.
- * Só o início é digitado: o fim segue a duração escolhida na tela 1 (é ela que entra no cálculo).
+ * Só o início é digitado: o fim acompanha mantendo a duração da conta (6h num churras novo; a salva, se retomado).
  */
 export function EventFields({
   state,
@@ -62,9 +61,6 @@ export function EventFields({
           />
         </label>
       </div>
-      <p className="-mt-1 text-[13px] font-bold text-muted">
-        Vai até ~{state.endTime} ({hoursLabel(hours)} de churras — ajuste a duração na tela 1).
-      </p>
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,140px),1fr))] gap-3">
         {withCep && (

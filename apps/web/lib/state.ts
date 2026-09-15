@@ -38,16 +38,20 @@ export interface ChurrasState {
   quoteId: string | null;
 }
 
+/** Duração assumida na conta (não perguntada ao usuário). */
+export const DEFAULT_DURATION_HOURS = 6;
+
 export const initialState: ChurrasState = {
   screen: 'setup',
   maxStep: 1,
   men: 6,
   women: 5,
   kids: 3,
-  // local/data só são pedidos no orçamento ou no convite; a calculadora usa só a duração
+  // local/data só são pedidos no orçamento ou no convite. A duração não é perguntada: a conta usa
+  // sempre 6h (faixa de 5 a 6h, carne +12%) e o fim acompanha o início digitado (endTimeFor)
   eventDay: '',
   startTime: '12:00',
-  endTime: '18:00',
+  endTime: '18:00', // 12:00 + DEFAULT_DURATION_HOURS
   eventName: '',
   eventAddress: '',
   eventCity: '',

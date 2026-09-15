@@ -11,14 +11,16 @@ próximos** — só aí faz sentido pedir local, data e contato.
 
 ## Decisão
 
-1. **Tela 1 só com o que muda a conta**: pessoas e duração (chips 4h / 6h / 8h). Local, data e a
-   pergunta de bebida saem — o foco é o que o açougue vende. **A lista sugerida não gera mais a categoria
+1. **Tela 1 só com as pessoas**: local, data, duração e a pergunta de bebida saem — o foco é o que o açougue vende. **A lista sugerida não gera mais a categoria
    Bebidas** (removida de `buildBaseList`, junto com `beerPerAdultL`); `alcoholMode` vira legado: segue
    aceito no DTO/banco e rotula o convite, mas não muda a lista (front fixa `'byob'`). O catálogo no banco
    nunca teve bebidas. Snapshots já salvos com Bebidas continuam exibidos no convite; reabrir e salvar um
    churras antigo recalcula sem elas.
-   A duração não muda o contrato: o front mantém `startTime`/`endTime` (default 12:00) e a duração vira
-   `endTime = start + horas` (`endTimeFor` em `lib/state.ts`).
+   **Duração não é perguntada, mas entra na conta fixa em 6h** (`DEFAULT_DURATION_HOURS`: faixa de 5–6h,
+   carne +12%; 4h→8h mudaria a carne de 4,5 para 6 kg num churras de 14 pessoas). O contrato não muda: o
+   front manda `startTime`/`endTime` (default 12:00–18:00) e, ao digitar o início no orçamento/convite, o
+   fim acompanha mantendo a duração (`endTimeFor`); churras retomados mantêm a duração salva.
+   A tela de Padrão não tem mais "← Ajustar pessoas" (volta pelo stepper).
 2. **Duas saídas depois da lista**: principal "Receber orçamentos" (`quote` → `quoteSent`) e secundária
    "Organizar e convidar" (`event` → conta → `saved`, o fluxo das fatias 3–7 intacto). O passo 4 do
    stepper troca de rótulo/tela pelo `branch`.

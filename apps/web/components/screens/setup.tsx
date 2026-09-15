@@ -1,18 +1,9 @@
 'use client';
 
 import { CalculationResult } from '@churrasquin/calculator';
-import { hoursLabel, kgLabel } from '../../lib/format';
-import { Action, ChurrasState, durationOf, endTimeFor } from '../../lib/state';
+import { kgLabel } from '../../lib/format';
+import { Action, ChurrasState } from '../../lib/state';
 import { press } from '../ui';
-
-// Churras longo estica carne, gelo e carvão (stretchFor do pacote: 5h+ e 7h+)
-const DURATION_OPTIONS: { hours: number; title: string; hint: string }[] = [
-  { hours: 4, title: 'Até 4 horas', hint: 'Almoço rápido' },
-  { hours: 6, title: '5 a 6 horas', hint: 'A tarde toda' },
-  { hours: 8, title: '7 horas ou mais', hint: 'Até a noite' },
-];
-
-const durationChip = (hours: number): number => (hours >= 7 ? 8 : hours >= 5 ? 6 : 4);
 
 function PersonStepper({
   title,
@@ -64,40 +55,17 @@ export function SetupScreen({
   dispatch: React.Dispatch<Action>;
 }) {
   const patch = (p: Partial<ChurrasState>) => dispatch({ type: 'patch', patch: p });
-  const hours = durationOf(state);
 
   return (
     <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-[clamp(16px,2.4vw,28px)]">
       {/* Formulário */}
       <section className="flex flex-col gap-6 border-4 border-ink bg-paper p-[clamp(18px,2.5vw,30px)] shadow-comic-10">
         <div className="flex flex-col gap-3">
-          <SectionTitle>1. Quem vai?</SectionTitle>
+          <SectionTitle>Quem vai?</SectionTitle>
           <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,150px),1fr))] gap-3">
             <PersonStepper title="Homens" hint="~420 g de carne" value={state.men} onChange={(v) => patch({ men: v })} />
             <PersonStepper title="Mulheres" hint="~320 g de carne" value={state.women} onChange={(v) => patch({ women: v })} />
             <PersonStepper title="Crianças" hint="~200 g de carne" value={state.kids} onChange={(v) => patch({ kids: v })} />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-3">
-          <SectionTitle>2. Quanto tempo de churras?</SectionTitle>
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,140px),1fr))] gap-3">
-            {DURATION_OPTIONS.map((opt) => {
-              const active = durationChip(hours) === opt.hours;
-              return (
-                <button
-                  key={opt.hours}
-                  aria-pressed={active}
-                  onClick={() => patch({ endTime: endTimeFor(state.startTime, opt.hours) })}
-                  className={`border-[3px] border-ink p-3 text-left shadow-comic-4 ${press} ${
-                    active ? 'bg-brand-sky text-paper' : 'bg-paper text-ink hover:bg-mustard'
-                  }`}
-                >
-                  <div className="text-[15px] font-black">{opt.title}</div>
-                  <div className={`text-[12px] font-bold ${active ? 'text-paper/80' : 'text-muted'}`}>{opt.hint}</div>
-                </button>
-              );
-            })}
           </div>
         </div>
 
@@ -117,7 +85,6 @@ export function SetupScreen({
             {[
               ['Convidados', `${result.guests} pessoas (${result.adults} adultos)`],
               ['Carne estimada', `~${kgLabel(result.meatBaseKg)}`],
-              ['Duração', hoursLabel(result.hours)],
             ].map(([k, v]) => (
               <div key={k} className="flex justify-between gap-3 border-b-[3px] border-dotted border-[#17130F55] py-2 last:border-b-0">
                 <dt>{k}</dt>
@@ -138,8 +105,8 @@ export function SetupScreen({
             className="h-[clamp(180px,26vw,280px)] w-full border-b-4 border-ink object-cover"
           />
           <p className="p-4 text-[14px] font-bold text-body-text">
-            A conta considera ~420 g de carne por homem, ~320 g por mulher e ~200 g por criança — e estica se o
-            churras passar de 5 horas. Local e data só entram se você quiser orçamento de açougues.
+            A conta considera ~420 g de carne por homem, ~320 g por mulher e ~200 g por criança, num churras de 5 a
+            6 horas. Local e data só entram se você quiser orçamento de açougues.
           </p>
         </section>
       </div>
