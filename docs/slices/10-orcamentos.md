@@ -13,7 +13,7 @@ WhatsApp. O convite (link, Pix, RSVP) segue disponível como caminho secundário
 - [x] Tela 1: remove "Onde vai ser?" e "Que dia e a que horas?"; só "Quem vai?"
 - [x] Duração não perguntada: conta fixa em 6h (`DEFAULT_DURATION_HOURS`); fim acompanha o início digitado
 - [x] Tela única no passo 1: pessoas + "Próximo" → linha "6 homens · 5 mulheres · 3 crianças" com editar + "Tipo de churrasco" (mobile: cartões compactos clicáveis; desktop: 3 cartões com "Ver itens do …")
-- [x] Básico: Fraldinha → Contra-filé (R$ 55/kg); nota "o açougue pode indicar outra opção com preço parecido" em Carnes (lista e resumo do pedido) e no "E agora?"
+- [x] Básico: Fraldinha → Contra-filé (R$ 55/kg, primeiro corte da lista); nota "o açougue pode indicar outra opção com preço parecido" em Carnes (lista e resumo do pedido) e no "E agora?"
 - [x] Seed do catálogo remove itens que saíram do pacote (sem isso o corte renomeado ficaria duplicado no banco); e2e cobre
 - [x] Tela de Padrão removida; stepper em 3 passos; saem "Resumo rápido" e foto do quintal
 - [x] Tela 1 sem a pergunta de bebida alcoólica (`alcoholMode` fixo em `byob` no front)

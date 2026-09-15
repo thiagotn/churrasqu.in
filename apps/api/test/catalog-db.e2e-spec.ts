@@ -48,7 +48,7 @@ describe('Catálogo no banco (e2e)', () => {
     });
     execSync('node prisma/seed.cjs', { cwd: __dirname + '/..', stdio: 'pipe' });
     const cuts = await prisma.catalogItem.findMany({ where: { tierId: 'basico', kind: 'cut' }, orderBy: { sortOrder: 'asc' } });
-    expect(cuts.map((c) => c.name)).toEqual(['Linguiça toscana', 'Coxa e sobrecoxa de frango', 'Contra-filé']);
+    expect(cuts.map((c) => c.name)).toEqual(['Contra-filé', 'Linguiça toscana', 'Coxa e sobrecoxa de frango']);
     // o seed restaurou a picanha também; muta de novo para os testes seguintes
     await prisma.catalogItem.update({
       where: { tierId_kind_name: { tierId: 'medio', kind: 'cut', name: 'Picanha' } },

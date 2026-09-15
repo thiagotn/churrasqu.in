@@ -47,9 +47,9 @@ export const TIERS: Record<TierId, TierSeed> = {
     priceLabel: '$',
     pitch: 'O churras honesto: linguiça, frango e um corte bovino que rende.',
     cuts: [
+      { name: 'Contra-filé', proportion: 0.4, unitPrice: 55 },
       { name: 'Linguiça toscana', proportion: 0.32, unitPrice: 26 },
       { name: 'Coxa e sobrecoxa de frango', proportion: 0.28, unitPrice: 19 },
-      { name: 'Contra-filé', proportion: 0.4, unitPrice: 55 },
     ],
     charcoal: { name: 'Carvão vegetal 5kg', unitPrice: 29 },
     sides: [
