@@ -2,6 +2,7 @@
 
 import { CalculationResult, Catalog, Category, ListItem } from '@churrasquin/calculator';
 import { kgLabel, money } from '../../lib/format';
+import { CUTS_NOTE } from '../../lib/labels';
 import { Action, ChurrasState } from '../../lib/state';
 import { PriceInput, QtyInput, WhatsAppIcon, press } from '../ui';
 
@@ -134,6 +135,11 @@ export function EditScreen({
                     <ItemRow key={item.id} item={item} dispatch={dispatch} />
                   ))}
                 </div>
+                {category === 'Carnes' && (
+                  <p className="border-t-2 border-dashed border-[#17130F33] bg-cream px-4 py-2 text-[13px] font-bold text-body-text">
+                    {CUTS_NOTE}
+                  </p>
+                )}
               </section>
             );
           })}

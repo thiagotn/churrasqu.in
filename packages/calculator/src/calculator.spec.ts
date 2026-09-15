@@ -264,11 +264,11 @@ describe('calculate — totais e rateio', () => {
 
   it('total é a soma de qty × preço dos itens ativos, rateado por adulto', () => {
     const result = calculate(small);
-    // Carnes (0.84kg → cada corte no mínimo 0.5kg): 0.5*26 + 0.5*19 + 0.5*49 = 47
+    // Carnes (0.84kg → cada corte no mínimo 0.5kg): 0.5*26 + 0.5*19 + 0.5*55 = 50
     // Acompanhamentos: pão de alho 2*4.5 + farofa 1*12 + vinagrete 1*18 = 39
     // Essenciais: carvão 1*29 + sal 1*9.5 + descartáveis 1*38 + acendedor 1*24 = 100.5
-    expect(result.total).toBe(186.5);
-    expect(result.perAdult).toBe(93.25);
+    expect(result.total).toBe(189.5);
+    expect(result.perAdult).toBe(94.75);
     expect(result.adults).toBe(2);
     expect(result.guests).toBe(2);
     expect(result.hours).toBe(4);

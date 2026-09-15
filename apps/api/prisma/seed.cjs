@@ -1,6 +1,6 @@
 // Seed idempotente do catálogo (fatia 8, ADR 0006): lê o TIERS do pacote
 // @churrasquin/calculator (fonte do CONTEÚDO) e faz upsert nas tabelas
-// CatalogTier/CatalogItem (fonte de RUNTIME). JS puro: roda no container
+// CatalogTier/CatalogItem (fonte de RUNTIME), removendo itens que saíram do pacote. JS puro: roda no container
 // sem ts-node (initContainer do homelab chama `node apps/api/prisma/seed.cjs`).
 const { PrismaClient } = require('@prisma/client');
 const { TIERS, TIER_IDS } = require('@churrasquin/calculator');
@@ -57,6 +57,10 @@ async function main() {
           update: { ...item },
         });
       }
+      // item que saiu do pacote (renomeado ou removido) sai do banco — senão o nível somaria cortes a mais
+      await prisma.catalogItem.deleteMany({
+        where: { tierId: tier.id, NOT: { OR: items.map((i) => ({ kind: i.kind, name: i.name })) } },
+      });
     }
     const count = await prisma.catalogItem.count();
     console.log(`✅ catálogo semeado: ${TIER_IDS.length} níveis, ${count} itens`);

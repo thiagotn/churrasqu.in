@@ -38,7 +38,7 @@ export function QuoteSentScreen({
               <li>A gente repassa sua lista para açougues perto do CEP {state.eventCep}.</li>
               <li>
                 Eles chamam no WhatsApp <span className="font-black text-ink">{state.whatsapp}</span> com preço e
-                condições de entrega ou retirada.
+                condições de entrega ou retirada — e podem sugerir outro corte com preço parecido.
               </li>
               <li>Você compara e fecha com quem fizer o melhor negócio — sem compromisso.</li>
             </ol>

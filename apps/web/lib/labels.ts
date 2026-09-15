@@ -7,6 +7,9 @@ export const ALCOHOL_NOTE: Record<AlcoholMode, string> = {
   none: 'Churras sem álcool: sucos e refrigerante na conta.',
 };
 
+/** Os cortes da lista são sugestão: o orçamento pode trazer outro de preço parecido. */
+export const CUTS_NOTE = 'Cortes sugeridos: o açougue pode indicar outra opção com preço parecido.';
+
 export const PIX_PLACEHOLDER: Record<string, string> = {
   Celular: '(11) 98888-1234',
   CPF: '123.456.789-00',

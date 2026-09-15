@@ -49,7 +49,7 @@ export const TIERS: Record<TierId, TierSeed> = {
     cuts: [
       { name: 'Linguiça toscana', proportion: 0.32, unitPrice: 26 },
       { name: 'Coxa e sobrecoxa de frango', proportion: 0.28, unitPrice: 19 },
-      { name: 'Fraldinha', proportion: 0.4, unitPrice: 49 },
+      { name: 'Contra-filé', proportion: 0.4, unitPrice: 55 },
     ],
     charcoal: { name: 'Carvão vegetal 5kg', unitPrice: 29 },
     sides: [

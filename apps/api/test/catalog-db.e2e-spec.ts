@@ -42,6 +42,20 @@ describe('Catálogo no banco (e2e)', () => {
     await app.close();
   });
 
+  it('seed remove item que saiu do pacote (ex.: corte renomeado)', async () => {
+    await prisma.catalogItem.create({
+      data: { tierId: 'basico', kind: 'cut', name: 'Corte Obsoleto', unitPriceCents: 4900, proportion: 0.4, sortOrder: 9 },
+    });
+    execSync('node prisma/seed.cjs', { cwd: __dirname + '/..', stdio: 'pipe' });
+    const cuts = await prisma.catalogItem.findMany({ where: { tierId: 'basico', kind: 'cut' }, orderBy: { sortOrder: 'asc' } });
+    expect(cuts.map((c) => c.name)).toEqual(['Linguiça toscana', 'Coxa e sobrecoxa de frango', 'Contra-filé']);
+    // o seed restaurou a picanha também; muta de novo para os testes seguintes
+    await prisma.catalogItem.update({
+      where: { tierId_kind_name: { tierId: 'medio', kind: 'cut', name: 'Picanha' } },
+      data: { unitPriceCents: 99900 },
+    });
+  });
+
   it('GET /catalog/tiers serve o banco (preço mutado aparece)', async () => {
     const res = await request(app.getHttpServer()).get('/catalog/tiers').expect(200);
     const medio = res.body.find((t: { id: string }) => t.id === 'medio');

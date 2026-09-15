@@ -2,6 +2,7 @@
 
 import { CalculationResult, Category } from '@churrasquin/calculator';
 import { kgLabel, money, qtyLabel } from '../lib/format';
+import { CUTS_NOTE } from '../lib/labels';
 
 const CATEGORY_ORDER: Category[] = ['Carnes', 'Acompanhamentos', 'Essenciais'];
 
@@ -37,6 +38,9 @@ export function ListSummary({ result, tierName }: { result: CalculationResult; t
                 </li>
               ))}
             </ul>
+            {category === 'Carnes' && (
+              <p className="border-t-2 border-dashed border-[#17130F33] px-3 py-1.5 text-[12px] font-bold text-body-text">{CUTS_NOTE}</p>
+            )}
           </div>
         );
       })}
