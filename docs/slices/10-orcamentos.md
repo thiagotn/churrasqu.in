@@ -12,7 +12,8 @@ WhatsApp. O convite (link, Pix, RSVP) segue disponível como caminho secundário
 
 - [x] Tela 1: remove "Onde vai ser?" e "Que dia e a que horas?"; só "Quem vai?"
 - [x] Duração não perguntada: conta fixa em 6h (`DEFAULT_DURATION_HOURS`); fim acompanha o início digitado
-- [x] Tela de Padrão sem o botão "← Ajustar pessoas"
+- [x] Tela única no passo 1: pessoas + "Próximo" → linha "6 homens · 5 mulheres · 3 crianças" com editar + "Tipo de churrasco" (mobile: cartões compactos clicáveis; desktop: 3 cartões com "Ver itens do …")
+- [x] Tela de Padrão removida; stepper em 3 passos; saem "Resumo rápido" e foto do quintal
 - [x] Tela 1 sem a pergunta de bebida alcoólica (`alcoholMode` fixo em `byob` no front)
 - [x] Categoria Bebidas removida da lista sugerida (`buildBaseList`, sem `beerPerAdultL`); catálogo no banco conferido sem bebidas (local e produção)
 - [x] "Lista <Padrão>" vira "Itens do Churras" (com "Padrão X" no subtítulo); stepper "3 · Itens"
@@ -21,7 +22,7 @@ WhatsApp. O convite (link, Pix, RSVP) segue disponível como caminho secundário
 - [x] Tela 3: CTA principal "Receber orçamentos de açougues", secundário "Organizar e convidar a galera"; barra mobile com "Pedir orçamento"
 - [x] `EventFields` compartilhado (data, início, CEP, bairro/cidade, endereço e referência opcionais) — usado no orçamento, no evento e no Compartilhar
 - [x] Telas novas: `quote` (#orcamento), `quoteSent` (#orcamento-enviado), `event` (#evento); `ListSummary` por categoria
-- [x] Stepper com passo 4 dinâmico por `branch`; hash/histórico não abre `saved`/`quoteSent` sem o que os precede (`canOpen`)
+- [x] Stepper com passo 3 dinâmico por `branch`; hash/histórico não abre `saved`/`quoteSent` sem o que os precede (`canOpen`)
 - [x] Migration `quote_requests`: `QuoteRequest` + `QuoteRequestItem`
 - [x] `CalculatorService.snapshot` extraído de `BarbecuesService` e reusado
 - [x] `common/phone.ts` (`normalizeBrPhone` para Pix, `normalizeBrMobile` para WhatsApp)

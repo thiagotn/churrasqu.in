@@ -1,6 +1,7 @@
 import { AlcoholMode, TierId, durationHours } from '@churrasquin/calculator';
 
-export type Screen = 'setup' | 'tiers' | 'edit' | 'quote' | 'quoteSent' | 'event' | 'auth' | 'saved';
+/** 'setup' reúne pessoas e tipo de churrasco (tela única, fatia 10). */
+export type Screen = 'setup' | 'edit' | 'quote' | 'quoteSent' | 'event' | 'auth' | 'saved';
 
 /** Saída escolhida depois da lista: pedir orçamento (principal) ou organizar e convidar */
 export type Branch = 'quote' | 'invite';
@@ -9,8 +10,10 @@ export type PixType = 'Celular' | 'CPF' | 'E-mail' | 'Aleatória';
 
 export interface ChurrasState {
   screen: Screen;
-  /** Maior etapa já alcançada (1–4) — o stepper só navega para trás/até aqui */
+  /** Maior etapa já alcançada (1–3) — o stepper só navega para trás/até aqui */
   maxStep: number;
+  /** Pessoas confirmadas no passo 1: viram uma linha editável e liberam o tipo de churrasco */
+  peopleConfirmed: boolean;
   men: number;
   women: number;
   kids: number;
@@ -44,6 +47,7 @@ export const DEFAULT_DURATION_HOURS = 6;
 export const initialState: ChurrasState = {
   screen: 'setup',
   maxStep: 1,
+  peopleConfirmed: false,
   men: 6,
   women: 5,
   kids: 3,
@@ -89,13 +93,12 @@ export const durationOf = (state: Pick<ChurrasState, 'startTime' | 'endTime'>): 
 
 export const STEP_OF_SCREEN: Record<Screen, number> = {
   setup: 1,
-  tiers: 2,
-  edit: 3,
-  quote: 4,
-  quoteSent: 4,
-  event: 4,
-  auth: 4,
-  saved: 4,
+  edit: 2,
+  quote: 3,
+  quoteSent: 3,
+  event: 3,
+  auth: 3,
+  saved: 3,
 };
 
 const BRANCH_OF_SCREEN: Partial<Record<Screen, Branch>> = {
@@ -106,8 +109,8 @@ const BRANCH_OF_SCREEN: Partial<Record<Screen, Branch>> = {
   saved: 'invite',
 };
 
-/** Tela que o passo 4 do stepper abre, conforme o caminho e o progresso nele. */
-export function step4Screen(state: ChurrasState): Screen {
+/** Tela que o passo 3 do stepper abre, conforme o caminho e o progresso nele. */
+export function step3Screen(state: ChurrasState): Screen {
   if (state.branch === 'invite') return state.savedSlug ? 'saved' : 'event';
   return state.quoteId ? 'quoteSent' : 'quote';
 }

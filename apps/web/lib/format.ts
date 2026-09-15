@@ -1,4 +1,4 @@
-/** Sem centavos — para rótulos compactos (abas de padrão no mobile). */
+/** Sem centavos — para rótulos compactos (totais dos tipos de churrasco). */
 export const moneyRound = (v: number): string =>
   'R$ ' + Math.round(v || 0).toLocaleString('pt-BR');
 

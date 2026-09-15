@@ -13,7 +13,7 @@ export function ListSummary({ result, tierName }: { result: CalculationResult; t
       <div>
         <h2 className="font-display text-[clamp(22px,3vw,28px)] tracking-wide text-ink">Itens do Churras</h2>
         <p className="text-[14px] font-extrabold text-muted">
-          Padrão {tierName} · {result.guests} convidados · {kgLabel(result.meatListKg)} de carne · referência {money(result.total)}
+          Churras {tierName} · {result.guests} convidados · {kgLabel(result.meatListKg)} de carne · referência {money(result.total)}
         </p>
       </div>
       {CATEGORY_ORDER.map((category) => {

@@ -103,7 +103,7 @@ export function EditScreen({
         <div>
           <h1 className="font-display text-[clamp(32px,5vw,48px)] tracking-wide text-ink">Itens do Churras</h1>
           <p className="text-[15px] font-extrabold text-muted">
-            Padrão {catalog[state.tier].name} · {result.guests} convidados
+            Churras {catalog[state.tier].name} · {result.guests} convidados
           </p>
         </div>
         {hasAdjustments && (
@@ -195,10 +195,10 @@ export function EditScreen({
             {saving ? 'Salvando…' : state.savedId ? 'Atualizar convite da galera' : 'Organizar e convidar a galera'}
           </button>
           <button
-            onClick={() => dispatch({ type: 'go', screen: 'tiers' })}
+            onClick={() => dispatch({ type: 'go', screen: 'setup' })}
             className={`rounded-full border-[3px] border-ink bg-paper px-4 py-2 text-[14px] font-extrabold text-ink shadow-comic-3 hover:bg-mustard ${press}`}
           >
-            ← Trocar padrão da lista
+            ← Trocar tipo de churrasco
           </button>
           <p className="text-[13px] font-bold text-muted">
             Preços de referência — o orçamento do açougue traz o valor real.

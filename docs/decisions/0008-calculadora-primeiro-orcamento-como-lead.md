@@ -20,9 +20,13 @@ próximos** — só aí faz sentido pedir local, data e contato.
    carne +12%; 4h→8h mudaria a carne de 4,5 para 6 kg num churras de 14 pessoas). O contrato não muda: o
    front manda `startTime`/`endTime` (default 12:00–18:00) e, ao digitar o início no orçamento/convite, o
    fim acompanha mantendo a duração (`endTimeFor`); churras retomados mantêm a duração salva.
-   A tela de Padrão não tem mais "← Ajustar pessoas" (volta pelo stepper).
+   **Passo 1 em tela única** (proposta aprovada no canvas "Calculadora em Tela Única"): pessoas →
+   "Próximo" → as pessoas viram uma linha editável (lápis / "Editar pessoas") e o "Tipo de churrasco"
+   (Básico/Médio/Gourmet com total estimado) aparece na mesma tela; escolher um tipo abre os itens. A tela
+   de Padrão deixou de existir; o stepper tem 3 passos (1 · Churras / 2 · Itens / 3 · Orçamento|Convidar).
+   Saíram o "Resumo rápido" e a foto do quintal.
 2. **Duas saídas depois da lista**: principal "Receber orçamentos" (`quote` → `quoteSent`) e secundária
-   "Organizar e convidar" (`event` → conta → `saved`, o fluxo das fatias 3–7 intacto). O passo 4 do
+   "Organizar e convidar" (`event` → conta → `saved`, o fluxo das fatias 3–7 intacto). O passo 3 do
    stepper troca de rótulo/tela pelo `branch`.
 3. **Pedido de orçamento sem conta**: `POST /api/quote-requests` público grava `QuoteRequest` +
    `QuoteRequestItem` (snapshot da lista, mesmo formato de `BarbecueItem`, via

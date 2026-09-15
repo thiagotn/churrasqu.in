@@ -14,7 +14,7 @@ import {
   calculate,
 } from '@churrasquin/calculator';
 import { ApiError, api, session } from '../lib/api';
-import { Screen, canOpen, initialState, reducer, step4Screen } from '../lib/state';
+import { Screen, canOpen, initialState, reducer, step3Screen } from '../lib/state';
 import { Header } from './header';
 import { Stepper } from './stepper';
 import { AuthScreen } from './screens/auth';
@@ -24,7 +24,6 @@ import { QuoteScreen } from './screens/quote';
 import { QuoteSentScreen } from './screens/quote-sent';
 import { SetupScreen } from './screens/setup';
 import { ShareScreen } from './screens/share';
-import { TiersScreen } from './screens/tiers';
 
 interface SavedBarbecue {
   id: string;
@@ -34,8 +33,7 @@ interface SavedBarbecue {
 // Passos do wizard viram hashes na URL: histórico nativo do browser (o voltar do
 // celular volta um passo) sem tocar no history.state interno do App Router do Next.
 const HASH_OF: Record<Screen, string> = {
-  setup: 'convidados',
-  tiers: 'padrao',
+  setup: 'churras',
   edit: 'lista',
   quote: 'orcamento',
   quoteSent: 'orcamento-enviado',
@@ -118,7 +116,8 @@ export function ChurrasApp() {
           savedSlug: saved.slug,
           branch: 'invite',
           screen: 'edit',
-          maxStep: 4,
+          maxStep: 3,
+          peopleConfirmed: true,
         },
       });
     } catch {
@@ -225,7 +224,7 @@ export function ChurrasApp() {
         screen={state.screen}
         maxStep={state.maxStep}
         branch={state.branch}
-        step4Target={step4Screen(state)}
+        step3Target={step3Screen(state)}
         onGo={(screen) => dispatch({ type: 'go', screen })}
       />
 
@@ -235,9 +234,8 @@ export function ChurrasApp() {
 
       {/* key remonta o passo (animação de entrada); tabIndex -1 permite o foco programático */}
       <main key={state.screen} ref={stepRef} tabIndex={-1} className="step-enter outline-none">
-      {state.screen === 'setup' && <SetupScreen state={state} result={result} dispatch={dispatch} />}
-      {state.screen === 'tiers' && (
-        <TiersScreen state={state} result={result} tierResults={tierResults} catalog={catalog} dispatch={dispatch} />
+      {state.screen === 'setup' && (
+        <SetupScreen state={state} result={result} tierResults={tierResults} catalog={catalog} dispatch={dispatch} />
       )}
       {state.screen === 'edit' && (
         <EditScreen
